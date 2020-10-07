@@ -33,6 +33,7 @@ cherry valid dir                          Validate cherry package from directory
 cherry new dir                            Setup a new cherry package in directory
 cherry run dir                            Run package with LuaJIT in case it's app
 cherry add package dir                    Same as cherry get command but installs package directly in same directory
+cherry remove package-dir                 If package in directory is valid then remove it
 cherry update                             Updates cherry package manager
 ]])
 
@@ -155,6 +156,21 @@ function cherry.get(p, d, b, q, add)
     return false
   end
   return true
+end
+
+function cherry.remove(p)
+  local k = (ffi.os == "Windows" and [[\]] or "/")
+  if cherry.valid(p) then
+    local info = cherry.read_info(p)
+    cherry.print("CHERRY >> INFO: REMOVING PACKAGE " .. info._NAME .. "...\n")
+    if type(info.lib.on_remove) == "function" then
+      info.lib.on_remove()
+    elseif type(info.lib.on_remove) == "string" then
+      os.execute(info.lib.on_remove)
+    end
+    os.execute(ffi.os == "Windows" and "rmdir /Q /S " .. string.gsub(p, "/", k) or "rm -r -f " .. string.gsub(p, "/", k))
+    cherry.print("CHERRY >> INFO: PACKAGE REMOVED SUCCESSFULLY!\n")
+  end
 end
 
 function cherry.install(s, d)
@@ -384,6 +400,9 @@ for a in ipairs(arg) do
     local q = arg[a + 4] or "github"
     local add = true
     cherry.get(p, d, b, q, add)
+  elseif arg[a] == "remove" then
+    local p = arg[a + 1]
+    cherry.remove(p)
   elseif arg[a] == "install" then
     local s = arg[a + 1]
     local d = arg[a + 2]

@@ -36,9 +36,10 @@ cherry -v or --version                    Returns cherry version
 cherry get package dir [branch] [channel] Downloads cherry package as archive from channel with branch to directory
 cherry install src dir                    Installs cherry package from folder to directory
 cherry valid dir                          Validate cherry package from directory
-cherry new dir                            Setup a new cherry package into directory
-cherry run dir                            Run package with LuaJIT in case package is app
+cherry new dir                            Setup a new cherry package in directory
+cherry run dir                            Run package with LuaJIT in case it's app
 cherry add package dir                    Same as cherry get command but installs package directly in same directory
+cherry remove package-dir                 If package in directory is valid then remove it
 cherry update                             Updates cherry package manager
 ```
 

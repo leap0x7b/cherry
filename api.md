@@ -45,6 +45,10 @@ Checks if package is valid to use.
 
 Gets package with name `p` in directory `d`, With branch `b` and channel `q`, With option to auto install in directory `d` as boolean `add` (true/false)
 
+### `cherry.remove(d)`
+
+Removes package from directory `d` if package is valid.
+
 ### `cherry.install(s, d)`
 
 Installs cherry package from source directory `s` to project/package directory `d`.

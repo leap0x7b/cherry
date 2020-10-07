@@ -24,6 +24,10 @@ cherry get package-user/package-repo-name dir master github
 
 > Channels available: `github`, `gitlab`, `bitbucket`, `mercurial`, Note that channels other than GitHub channel not tested yet!
 
+### Removing a package
+
+If a package is valid you can remove it, Simply type `cherry remove package-dir`.
+
 ### Running a package
 
 If your package is app then simply run package by typing `cherry run package-directory`
