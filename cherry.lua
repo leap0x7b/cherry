@@ -1,6 +1,7 @@
 -- Written by Rabia Alhaffar in 4/Octorber/2020
 -- Cherry package manager source code!
 -- VERSION: v0.1 (7/October/2020)
+-- TODO: Fix folders problem!
 if not require("jit") then
   print("CHERRY >> ERROR: NOT POSSIBLE TO USE NON-LUAJIT COMPILER WITH CHERRY!")
   return false
@@ -229,7 +230,7 @@ function cherry.install(s, d)
     if #info.lib.src > 0 then
       for f in ipairs(info.lib.src) do
         if string.match(info.lib.src[f], ".lua") then
-          os.execute("mkdir " .. d .. k .. cherry.dir(info.lib.src[f]))
+          --os.execute("mkdir " .. d .. k .. cherry.dir(info.lib.src[f]))
           os.execute(c .. string.gsub(s, "/", k) .. k .. string.gsub(info.lib.src[f], "/", k) .. " " .. d)
         end
       end
@@ -246,7 +247,7 @@ function cherry.install(s, d)
     if #info.lib.shared > 0 then
       for f in ipairs(info.lib.shared) do
         if string.match(info.lib.shared[f], ".so") or string.match(info.lib.shared[f], ".dll") or string.match(info.lib.shared[f], ".dylib") or string.match(info.lib.shared[f], ".a") or string.match(info.lib.shared[f], ".o") or string.match(info.lib.shared[f], ".lib") then
-          os.execute("mkdir " .. d .. k .. cherry.dir(info.lib.shared[f]))
+          --os.execute("mkdir " .. d .. k .. cherry.dir(info.lib.shared[f]))
           os.execute(c .. s .. k .. string.gsub(info.lib.shared[f], "/", k) .. " " .. d)
         end
       end
@@ -257,7 +258,7 @@ function cherry.install(s, d)
     if #info.lib.resources > 0 then
       for f in ipairs(info.lib.resources) do
         if not (string.match(info.lib.resources[f], ".lua") or string.match(info.lib.resources[f], ".so") or string.match(info.lib.resources[f], ".dll") or string.match(info.lib.resources[f], ".dylib") or string.match(info.lib.resources[f], ".a") or string.match(info.lib.resources[f], ".o") or string.match(info.lib.resources[f], ".lib")) then
-          os.execute("mkdir " .. d .. k .. cherry.dir(info.lib.resources[f]))
+          --os.execute("mkdir " .. d .. k .. cherry.dir(info.lib.resources[f]))
           os.execute(c .. s .. k .. string.gsub(info.lib.resources[f], "/", k) .. " " .. d)
         end
       end
