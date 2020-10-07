@@ -246,6 +246,7 @@ function cherry.install(s, d)
   if info.lib.shared then
     if #info.lib.shared > 0 then
       for f in ipairs(info.lib.shared) do
+		print(c .. string.gsub(s, "/", k) .. k .. string.gsub(info.lib.shared[f], "/", k) .. " " .. d)
         if string.match(info.lib.shared[f], ".so") or string.match(info.lib.shared[f], ".dll") or string.match(info.lib.shared[f], ".dylib") or string.match(info.lib.shared[f], ".a") or string.match(info.lib.shared[f], ".o") or string.match(info.lib.shared[f], ".lib") then
           --os.execute("mkdir " .. d .. k .. cherry.dir(info.lib.shared[f]))
           os.execute(c .. string.gsub(s, "/", k) .. k .. string.gsub(info.lib.shared[f], "/", k) .. " " .. d)
