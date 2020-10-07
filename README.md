@@ -90,14 +90,14 @@ return {
 }
 ```
 
-> Documentation on working with packages is available [here](https://github.com/Rabios/cherry/blob/master/packages.md).
+> Documentation on working with packages is available [here!](https://github.com/Rabios/cherry/blob/master/packages.md)
 
 
 ### Using cherry inside Lua
 
 When you do commands with cherry, Actually cherry uses built-in functions in source code so can use them in your project!
 
-If you want to know more info about this see [here](https://github.com/Rabios/cherry/blob/master/packages.md)
+If you want to know more info about this see [here!](https://github.com/Rabios/cherry/blob/master/api.md)
 
 ### License
 
