@@ -1,0 +1,1 @@
+luajit d:\cherry\cherry.lua "$@"
