@@ -1,4 +1,4 @@
-﻿This file contains third party licenses for the following softwares and libraries used by the repository:
+This file contains third party licenses for the following softwares and libraries used by the repository:
 
 1. Lua
 2. LuaJIT
@@ -54,8 +54,6 @@ http://creativecommons.org/licenses/publicdomain
 ====================================================
 7-Zip License
 ====================================================
-  License for use and distribution
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   7-Zip Copyright (C) 1999-2020 Igor Pavlov.
 
