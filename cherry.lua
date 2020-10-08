@@ -131,12 +131,14 @@ function cherry.get(p, d, b, q, add)
     l = "https://bitbucket.org/" .. p .. "/get/" .. b .. ".zip"
   end
   
+  cherry.print("DOWNLOADING PACKAGE " .. p .. " FROM " .. l .. "\n")
   local i = d .. k .. string.gsub(p, "/", ".") .. ".zip"
   if ffi.os == "Windows" then
     os.execute("start /B /wait curl " .. l .. " -L -o " .. i .. " & 7z x " .. i .. " -o" .. d .. " -y & del " .. i)
   else
     os.execute("curl " .. l .. " -L -o " .. i .. " && " .. "unzip " .. i .. " -d " .. d .. " && rm -rf " .. i)
   end
+  cherry.print("PACKAGE " .. p .. " DOWNLOADED SUCCESSFULLY!\n")
   
   local j = ""
   local g = false
@@ -177,17 +179,19 @@ function cherry.uninstall(p)
     local info = cherry.read_info(p)
     cherry.print("CHERRY >> INFO: UNINSTALLING PACKAGE " .. info._NAME .. "...\n")
     os.execute(ffi.os == "Windows" and "rmdir /Q /S " .. string.gsub(p, "/", k) or "rm -r -f " .. string.gsub(p, "/", k))
-    cherry.print("CHERRY >> INFO: PACKAGE UNINSTALLED SUCCESSFULLY!\n")
+    cherry.print("CHERRY >> INFO: PACKAGE " .. info._NAME .. " UNINSTALLED SUCCESSFULLY!\n")
   end
 end
 
 function cherry.remove(p, d)
   local k = (ffi.os == "Windows" and [[\]] or "/")
   local info = dofile(string.gsub(d .. "/" .. p .. ".files", "/", k))
+  cherry.print("REMOVING PACKAGE " .. p .. " FROM " .. d .. "\n")
   for f in ipairs(info) do
     os.execute("erase " .. string.gsub(d, "/", k) .. k .. info[f])
   end
   os.execute("erase " .. string.gsub(d .. "/" .. p .. ".files", "/", k))
+  cherry.print("PACKAGE " .. p .. " REMOVED SUCCESSFULLY!\n")
 end
 
 function cherry.install(s, d)
@@ -377,12 +381,14 @@ function cherry.run(d, a)
     if info._APP then
       for i in ipairs(info.package.src) do
         if (string.match(info.package.src[i], info.package.main)) then
+          cherry.print("RUNNING PACKAGE " .. info._NAME .. " AS APP...\n")
           os.execute("cd " .. d .. " " .. o .. " luajit " .. info.package.main .. " " .. (unpack(a) or ""))
+          cherry.print("PACKAGE " .. info._NAME .. " RAN AS APP SUCCESSFULLY!\n")
           break
         end
       end
     else
-      cherry.print("CHERRY >> ERROR: PACKAGE IS LIBRARY!\n")
+      cherry.print("CHERRY >> ERROR: PACKAGE " .. info._NAME .. " IS LIBRARY!\n")
       return false
     end
   end
@@ -396,6 +402,7 @@ function cherry.create(d, l, a)
   cherry.print("CHERRY >> CONFIRMATION: IS PACKAGE AN APP? [Y/N] ")
   local u = a or io.read()
   local q = string.lower(u) == "y" and "true" or string.lower(u) == "n" and "false"
+  cherry.print("CREATING PACKAGE IN DIRECTORY " .. d .. "\n")
   local c = io.open(string.gsub(d, "/", k) .. k .. string.gsub("/.cherry", "/", k), "w")
   c:write([[return {
   _NAME = "package-name",
@@ -419,11 +426,12 @@ function cherry.create(d, l, a)
   local m = io.open(d .. string.gsub("/" .. t, "/", k), "w")
   m:write("-- TODO: Code!")
   m:close()
-  cherry.print("CHERRY >> INFO: PACKAGE " .. d .. " CREATED SUCCESSFULLY!\n")
+  cherry.print("CHERRY >> INFO: PACKAGE IN DIRECTORY " .. d .. " CREATED SUCCESSFULLY!\n")
   return true
 end
 
 function cherry.update()
+  cherry.print("UPDATING CHERRY...\n")
   cherry.get("Rabios/cherry", cherry._DIR, "master", "github", true)
 end
 
