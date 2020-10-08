@@ -33,16 +33,16 @@ Then clone cherry in folder and add the folder to PATH on windows or add it so y
 ### Commands
 
 ```
-cherry -v or --version                    Returns cherry version
-cherry get package dir [branch] [channel] Downloads cherry package as archive from channel with branch to directory
-cherry install src dir                    Installs cherry package from folder to directory
-cherry valid dir                          Validate cherry package from directory
-cherry new dir                            Setup a new cherry package in directory
-cherry run dir                            Run package with LuaJIT in case it's app
-cherry add package dir                    Same as cherry get command but installs package directly in same directory
-cherry uninstall package-dir              If package in directory is valid then remove it
-cherry remove package-name package-dir    Removes package from directory of package
-cherry update                             Updates cherry package manager
+cherry -v or --version                          Returns cherry version
+cherry get package dir [branch] [channel]       Downloads cherry package as archive from channel with branch to directory
+cherry install src dir                          Installs cherry package from folder to directory
+cherry valid dir                                Validate cherry package from directory
+cherry new dir                                  Setup a new cherry package in directory
+cherry run dir                                  Run package with LuaJIT in case it's app
+cherry add package dir                          Same as cherry get command but installs package directly in same directory
+cherry uninstall package-dir                    If package in directory is valid then remove it
+cherry remove package-name package-dir          Removes package from directory of package
+cherry update                                   Updates cherry package manager
 ```
 
 ### Real example
