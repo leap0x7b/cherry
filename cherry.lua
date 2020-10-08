@@ -1,6 +1,7 @@
 -- Written by Rabia Alhaffar in 4/Octorber/2020
 -- Cherry package manager source code!
 -- VERSION: v0.2 (8/October/2020)
+-- TODO: Fix update problems!
 if not require("jit") then
   print("CHERRY >> ERROR: NOT POSSIBLE TO USE NON-LUAJIT COMPILER WITH CHERRY!")
   return false
@@ -72,7 +73,7 @@ end
 cherry._DIR = cherry.dir(cherry._PATH)
 
 function cherry.read_info(f)
-  return dofile(f .. "/_.cherry")
+  return dofile(f .. "/.cherry")
 end
 
 function cherry.valid(f)
@@ -102,7 +103,7 @@ function cherry.get(p, d, b, q, add)
   local u = ""
   local v = true
   local k = (ffi.os == "Windows" and [[\]] or "/")
-  os.execute("mkdir " .. cherry.dir(d))
+  os.execute("mkdir " .. d)
   if q == "github" then
     l = "https://github.com/" .. p .. "/archive/" .. b .. ".zip"
   elseif q == "gitlab" then
@@ -367,7 +368,7 @@ function cherry.create(d, l, a)
   cherry.print("CHERRY >> CONFIRMATION: IS PACKAGE AN APP? [Y/N] ")
   local u = a or io.read()
   local q = string.lower(u) == "y" and "true" or string.lower(u) == "n" and "false"
-  local c = io.open(string.gsub(d, "/", k) .. k .. string.gsub("/_.cherry", "/", k), "w")
+  local c = io.open(string.gsub(d, "/", k) .. k .. string.gsub("/.cherry", "/", k), "w")
   c:write([[return {
   _NAME = "package-name",
   _URL = "https://github.com/user/package-repo",
