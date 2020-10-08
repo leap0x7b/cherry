@@ -189,7 +189,7 @@ function cherry.install(s, d)
   end
   cherry.print("CHERRY >> INFO: INSTALLING PACKAGE " .. (info._NAME or "FROM " .. s) .. " TO " .. d .. "\n")
   
-  local c = (ffi.os == "Windows" and "copy /Y " or [[cp ]])
+  local c = (ffi.os == "Windows" and "copy /Y " or "cp ")
   local k = (ffi.os == "Windows" and "\\" or "/")
   local pf = io.open(d .. "/" .. info._NAME .. ".files", "w")
   pf:write("return { ")
@@ -388,16 +388,16 @@ function cherry.update()
   local k = (ffi.os == "Windows" and [[\]] or "/")
   local d = cherry._DIR
   local l = cherry._UPDATELINK
-  local i = cherry._DIR .. k .. "cherry.zip"
-  local j = cherry._DIR .. k .. "cherry-master"
-  local c = (ffi.os == "Windows" and "copy /Y " or [[cp -a ]])
+  local i = cherry.dir(d .. "cherry-latest.zip")
+  local c = (ffi.os == "Windows" and "copy /Y " or "cp -a ")
   cherry.print("CHERRY >> INFO: UPDATING CHERRY...\n")
+  os.execute("mkdir " .. j)
   if ffi.os == "Windows" then
     os.execute("start /B /wait curl " .. l .. " -L -o " .. i .. " & 7z x " .. i .. " -o" .. d .. " -y & del " .. i)
-    os.execute(c .. j .. k .. "*.* " .. d .. " & rmdir /Q /S " .. j)
+    os.execute(c .. "\\cherry-master" .. [[\*.* ]] .. d .. " & rmdir /Q /S " .. d .. "\\cherry-master")
   else
     os.execute("curl " .. l .. " -L -o " .. i .. " && " .. "unzip " .. i .. " -d " .. d .. " && rm -rf " .. i)
-    os.execute(c .. j .. k .. "*.* " .. d .. " && rm -r -f " .. j)
+    os.execute(c .. "/cherry-master" .. " " .. d .. " && rm -r -f " .. d .. "/cherry-master")
   end
 end
 
