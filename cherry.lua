@@ -1,7 +1,6 @@
 -- Written by Rabia Alhaffar in 4/Octorber/2020
 -- Cherry package manager source code!
 -- VERSION: v0.2 (8/October/2020)
--- TODO: Fix update problems!
 if not require("jit") then
   print("CHERRY >> ERROR: NOT POSSIBLE TO USE NON-LUAJIT COMPILER WITH CHERRY!")
   return false
@@ -103,7 +102,7 @@ function cherry.get(p, d, b, q, add)
   local u = ""
   local v = true
   local k = (ffi.os == "Windows" and [[\]] or "/")
-  os.execute("mkdir " .. d)
+  os.execute("mkdir " .. cherry.dir(d))
   if q == "github" then
     l = "https://github.com/" .. p .. "/archive/" .. b .. ".zip"
   elseif q == "gitlab" then
