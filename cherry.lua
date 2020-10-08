@@ -394,7 +394,7 @@ function cherry.create(d, l, a)
 end
 
 function cherry.update()
-  cherry.add("Rabios/cherry", cherry._DIR, "master", "github", true)
+  cherry.get("Rabios/cherry", cherry._DIR, "master", "github", true)
 end
 
 local arg = { ... }
