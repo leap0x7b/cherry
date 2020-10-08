@@ -1,1 +1,1 @@
-luajit %~dp0\cherry.lua %*
+luajit %~dp0\cherry.lua %
