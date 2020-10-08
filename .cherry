@@ -4,11 +4,11 @@ return {
   _LICENSE = "MIT (X11)",
   _CODENAME = "cherry-pm",
   _AUTHOR = "Rabia Alhaffar",
-  _VERSION = "v0.2",
+  _VERSION = "v0.3",
   _BRANCH = "master",
   _APP = false,
   description = [[ The super package manager for LuaJIT! ]],
-  lib = {
+  package = {
     src = {
 	  "cherry.lua"
 	},

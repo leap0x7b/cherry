@@ -1,6 +1,6 @@
 # cherry
 
-Cherry or cherry (You name it) is package manager made for LuaJIT, Started since 4/October/2020 in goal of bringing a solution for LuaJIT projects and bindings, Also it can be used to distribute Lua command-line based apps from source!
+Cherry or cherry (You name it) is package manager made for LuaJIT, Started since 6/October/2020 in goal of bringing a solution for LuaJIT projects and bindings, Also it can be used to distribute Lua command-line based apps from source!
 
 ### Brief
 
@@ -18,6 +18,7 @@ LuaRocks has awesome history when it comes to Lua programming, However there are
 - Better distribution platform for LuaJIT bindings.
 - You can use cherry functions into your projects as interface!
 - Command-Line apps distribution made easy!
+- Backward-Compatible with old versions!
 
 ### Installation and requirements
 
@@ -83,7 +84,7 @@ return {
   description = [[
     package-description
   ]],
-  lib = {
+  package = {
     src = {
 	    "test.lua"
 	  },

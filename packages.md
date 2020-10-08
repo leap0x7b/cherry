@@ -57,7 +57,7 @@ return {
   description = [[
     package-description
   ]],
-  lib = {
+  package = {
     src = {
 	    "test.lua"
 	  },
@@ -77,8 +77,8 @@ return {
 - `_BRANCH` (string): Branch of package repository.
 - `_APP` (bool): If package is app or library.
 - `description` (string): Description of package.
-- `lib.src` (table): Table contains Lua files paths from package directory.
-- `lib.main` (string): Main file that can be run if package is app.
+- `package.src` (table): Table contains Lua files paths from package directory.
+- `package.main` (string): Main file that can be run if package is app.
 
 #### Non-Optional properties
 
@@ -86,13 +86,13 @@ return {
 - `_CHERRY` (number): Cherry version limit for package.
 - `_ARCH` (string): package architecture, `global` for all or a string possible to get via `ffi.arch`.
 - `_OS` (string): package operating system, `global` for all or a string possible to get via `ffi.os`.
-- `lib.shared` (table): Table contains dll/dylib/so/lib/o/a files paths from package directory (In case you do bindings).
-- `lib.resources` (table): Table contains paths to any files that has other types than used by `lib.src` and `lib.shared` and `lib.main`
-- `lib.dependencies` (table): Table contains dependencies (Packages that is downloaded and installed from internet)
-- `lib.licenses` (table): Table contains paths to licenses files.
-- `lib.readme` (string): README file.
-- `lib.external_files` (table): Single files downloaded and installed from internet!
-- `lib.on_install` (string/function): string to be executed by system or function to be called once package is installed.
+- `package.shared` (table): Table contains dll/dylib/so/lib/o/a files paths from package directory (In case you do bindings).
+- `package.resources` (table): Table contains paths to any files that has other types than used by `package.src` and `lib.shared` and `lib.main`
+- `package.dependencies` (table): Table contains dependencies (Packages that is downloaded and installed from internet)
+- `package.licenses` (table): Table contains paths to licenses files.
+- `package.readme` (string): README file.
+- `package.external_files` (table): Single files downloaded and installed from internet!
+- `package.on_install` (string/function): string to be executed by system or function to be called once package is installed.
 
 ### Distribution of package
 

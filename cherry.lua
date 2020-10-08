@@ -1,13 +1,13 @@
 -- Written by Rabia Alhaffar in 4/Octorber/2020
 -- Cherry package manager source code!
--- VERSION: v0.2 (8/October/2020)
+-- VERSION: v0.3 (9/October/2020)
 if not require("jit") then
   print("CHERRY >> ERROR: NOT POSSIBLE TO USE NON-LUAJIT COMPILER WITH CHERRY!")
   return false
 end
 local ffi = require("ffi")
 local cherry = {
-  _VERSION = 0.2,
+  _VERSION = 0.3,
   _URL = "https://github.com/Rabios/cherry",
   _PATH = string.gsub(debug.getinfo(1).short_src, "/", (ffi.os == "Windows" and [[\]] or "/")),
   _UPDATELINK = "https://github.com/Rabios/cherry/archive/master.zip",
@@ -79,7 +79,18 @@ function cherry.valid(f)
   local k = (ffi.os == "Windows" and [[\]] or "/")
   cherry.print("CHERRY >> INFO: VALIDATING PACKAGE FROM " .. string.gsub(f, "/", k) .. "\n")
   local info = cherry.read_info(f)
-  local t = { "_NAME", "_URL", "_AUTHOR", "_LICENSE", "_VERSION", "_CODENAME", "_BRANCH", "_APP", "description", "lib" }
+  local t = { "_NAME", "_URL", "_AUTHOR", "_LICENSE", "_VERSION", "_CODENAME", "_BRANCH", "_APP", "description", "package" }
+  
+  -- Hack was done to keep compatibility!
+  if not info.package then
+    t[11] = "lib"
+    info.package = info.lib or nil
+  end
+  
+  if info.package.license and not info.package.licenses then
+    info.package.licenses = table.pack(info.package.license)
+    info.package.licenses.n = nil
+  end
   
   for x in ipairs(t) do
     if not info[x] == nil then
@@ -88,7 +99,7 @@ function cherry.valid(f)
     end
   end
   
-  if not (info.lib.src and info.lib.main) then
+  if not (info.package.src and info.package.main) then
     cherry.print("CHERRY >> ERROR: PACKAGE " .. (info._NAME or "FROM " .. string.gsub(f, "/", k)) .. " INVALID!\n")
     return false
   end
@@ -234,15 +245,15 @@ function cherry.install(s, d)
     end
   end
   
-  if info.lib.src then
-    if #info.lib.src > 0 then
-      for f in ipairs(info.lib.src) do
-        if string.match(info.lib.src[f], ".lua") then
-          if not cherry.dir(info.lib.src[f]) == info.lib.src[f] then
-            os.execute("mkdir " .. cherry.dir(d .. k .. info.lib.src[f]))
+  if info.package.src then
+    if #info.package.src > 0 then
+      for f in ipairs(info.package.src) do
+        if string.match(info.package.src[f], ".lua") then
+          if not cherry.dir(info.package.src[f]) == info.package.src[f] then
+            os.execute("mkdir " .. cherry.dir(d .. k .. info.package.src[f]))
           end
-          os.execute(c .. string.gsub(s, "/", k) .. k .. string.gsub(info.lib.src[f], "/", k) .. " " .. d)
-          pf:write('"' .. string.gsub(info.lib.src[f], "/", k) .. '"' .. ", ")
+          os.execute(c .. string.gsub(s, "/", k) .. k .. string.gsub(info.package.src[f], "/", k) .. " " .. d)
+          pf:write('"' .. string.gsub(info.package.src[f], "/", k) .. '"' .. ", ")
         end
       end
     else
@@ -254,73 +265,73 @@ function cherry.install(s, d)
     return false
   end
   
-  if info.lib.shared then
-    if #info.lib.shared > 0 then
-      for f in ipairs(info.lib.shared) do
-        if string.match(info.lib.shared[f], ".so") or string.match(info.lib.shared[f], ".dll") or string.match(info.lib.shared[f], ".dylib") or string.match(info.lib.shared[f], ".a") or string.match(info.lib.shared[f], ".o") or string.match(info.lib.shared[f], ".lib") then
-          if not cherry.dir(info.lib.shared[f]) == info.lib.shared[f] then
-            os.execute("mkdir " .. cherry.dir(d .. k .. info.lib.shared[f]))
+  if info.package.shared then
+    if #info.package.shared > 0 then
+      for f in ipairs(info.package.shared) do
+        if string.match(info.package.shared[f], ".so") or string.match(info.package.shared[f], ".dll") or string.match(info.package.shared[f], ".dylib") or string.match(info.package.shared[f], ".a") or string.match(info.package.shared[f], ".o") or string.match(info.package.shared[f], ".lib") then
+          if not cherry.dir(info.package.shared[f]) == info.package.shared[f] then
+            os.execute("mkdir " .. cherry.dir(d .. k .. info.package.shared[f]))
           end
-          pf:write('"' .. string.gsub(info.lib.shared[f], "/", k) .. '"' .. ", ")
-          os.execute(c .. string.gsub(s, "/", k) .. k .. string.gsub(info.lib.shared[f], "/", k) .. " " .. d)
+          pf:write('"' .. string.gsub(info.package.shared[f], "/", k) .. '"' .. ", ")
+          os.execute(c .. string.gsub(s, "/", k) .. k .. string.gsub(info.package.shared[f], "/", k) .. " " .. d)
         end
       end
     end
   end
   
-  if info.lib.resources then
-    if #info.lib.resources > 0 then
-      for f in ipairs(info.lib.resources) do
-        if not (string.match(info.lib.resources[f], ".lua") and string.match(info.lib.resources[f], ".so") and string.match(info.lib.resources[f], ".dll") and string.match(info.lib.resources[f], ".dylib") and string.match(info.lib.resources[f], ".a") and string.match(info.lib.resources[f], ".o") and string.match(info.lib.resources[f], ".lib")) then
-          if not cherry.dir(info.lib.resources[f]) == info.lib.resources[f] then
-            os.execute("mkdir " .. cherry.dir(d .. k .. info.lib.resources[f]))
+  if info.package.resources then
+    if #info.package.resources > 0 then
+      for f in ipairs(info.package.resources) do
+        if not (string.match(info.package.resources[f], ".lua") and string.match(info.package.resources[f], ".so") and string.match(info.package.resources[f], ".dll") and string.match(info.package.resources[f], ".dylib") and string.match(info.package.resources[f], ".a") and string.match(info.package.resources[f], ".o") and string.match(info.package.resources[f], ".lib")) then
+          if not cherry.dir(info.package.resources[f]) == info.package.resources[f] then
+            os.execute("mkdir " .. cherry.dir(d .. k .. info.package.resources[f]))
           end
-          pf:write('"' .. string.gsub(info.lib.resources[f], "/", k) .. '"' .. ", ")
-          os.execute(c .. string.gsub(s, "/", k) .. k .. string.gsub(info.lib.resources[f], "/", k) .. " " .. d)
+          pf:write('"' .. string.gsub(info.package.resources[f], "/", k) .. '"' .. ", ")
+          os.execute(c .. string.gsub(s, "/", k) .. k .. string.gsub(info.package.resources[f], "/", k) .. " " .. d)
         end
       end
     end
   end
     
-  if info.lib.licenses then
-    if #info.lib.licenses > 0 then
-      for f in ipairs(info.lib.licenses) do
-        if not cherry.dir(info.lib.licenses[f]) == info.lib.licenses[f] then
-          os.execute("mkdir " .. cherry.dir(d .. k .. info.lib.licenses[f]))
+  if info.package.licenses then
+    if #info.package.licenses > 0 then
+      for f in ipairs(info.package.licenses) do
+        if not cherry.dir(info.package.licenses[f]) == info.package.licenses[f] then
+          os.execute("mkdir " .. cherry.dir(d .. k .. info.package.licenses[f]))
         end
-        pf:write('"' .. string.gsub(string.gsub(info.lib.licenses[f], "LICENSE", info._NAME .. "-LICENSE"), "/", k) .. '"' .. ", ")
-        os.execute(c .. string.gsub(s, "/", k) .. k .. info.lib.licenses[f] .. " " .. d .. k .. string.gsub(string.gsub(info.lib.licenses[f], "LICENSE", info._NAME .. "-LICENSE"), "/", k))
+        pf:write('"' .. string.gsub(string.gsub(info.package.licenses[f], "LICENSE", info._NAME .. "-LICENSE"), "/", k) .. '"' .. ", ")
+        os.execute(c .. string.gsub(s, "/", k) .. k .. info.package.licenses[f] .. " " .. d .. k .. string.gsub(string.gsub(info.package.licenses[f], "LICENSE", info._NAME .. "-LICENSE"), "/", k))
       end
     end
   end
   
-  if info.lib.readme then
-    if not cherry.dir(info.lib.readme) == info.lib.readme then
-      os.execute("mkdir " .. cherry.dir(d .. k .. info.lib.readme))
+  if info.package.readme then
+    if not cherry.dir(info.package.readme) == info.package.readme then
+      os.execute("mkdir " .. cherry.dir(d .. k .. info.package.readme))
     end
-    pf:write('"' .. string.gsub(info._NAME .. "-" .. info.lib.readme, "/", k) .. '"' .. ", ")
-    os.execute(c .. string.gsub(s, "/", k) .. k .. info.lib.readme .. " " .. d .. k .. info._NAME .. "-" .. info.lib.readme)
+    pf:write('"' .. string.gsub(info._NAME .. "-" .. info.package.readme, "/", k) .. '"' .. ", ")
+    os.execute(c .. string.gsub(s, "/", k) .. k .. info.package.readme .. " " .. d .. k .. info._NAME .. "-" .. info.package.readme)
   end
   
-  if info.lib.external_files then
-    if not #info.lib.external_files > 0 then
-      for f in ipairs(info.lib.external_files) do
-        cherry.print("CHERRY >> INFO: DOWNLOADING " .. info.lib.external_files[f])
+  if info.package.external_files then
+    if not #info.package.external_files > 0 then
+      for f in ipairs(info.package.external_files) do
+        cherry.print("CHERRY >> INFO: DOWNLOADING " .. info.package.external_files[f])
         if ffi.os == "Windows" then
-          os.execute("start /B /wait curl " .. info.lib.external_files[f] .. " -L -o " .. d)
+          os.execute("start /B /wait curl " .. info.package.external_files[f] .. " -L -o " .. d)
         else
-          os.execute("curl " .. info.lib.external_files[f] .. " -L -o " .. d)
+          os.execute("curl " .. info.package.external_files[f] .. " -L -o " .. d)
         end
-        pf:write('"' .. info.lib.external_files[f] .. '"' .. ", ")
+        pf:write('"' .. info.package.external_files[f] .. '"' .. ", ")
       end
     end
   end
   
-  if info.lib.dependencies then
-    if #info.lib.dependencies > 0 then
-      for f in ipairs(info.lib.dependencies) do
-        cherry.print("CHERRY >> INFO: DOWNLOADING DEPENDENCIES (" .. info.lib.dependencies[f][1] .. ")\n")
-        os.execute("cherry add " .. info.lib.dependencies[f][1] .. " " .. d .. " " .. (info.lib.dependencies[f][2] or "master") .. " " .. (info.lib.dependencies[f][3] or "github"))
+  if info.package.dependencies then
+    if #info.package.dependencies > 0 then
+      for f in ipairs(info.package.dependencies) do
+        cherry.print("CHERRY >> INFO: DOWNLOADING DEPENDENCIES (" .. info.package.dependencies[f][1] .. ")\n")
+        os.execute("cherry add " .. info.package.dependencies[f][1] .. " " .. d .. " " .. (info.package.dependencies[f][2] or "master") .. " " .. (info.package.dependencies[f][3] or "github"))
       end
     end
   end
@@ -329,11 +340,11 @@ function cherry.install(s, d)
   pf:close()
   cherry.print("CHERRY >> INFO: PACKAGE " .. info._NAME .. " INSTALLED SUCCESSFULLY!\n")
   os.execute(ffi.os == "Windows" and "rmdir /Q /S " .. string.gsub(s, "/", k) or "rm -r -f " .. string.gsub(s, "/", k))
-  if info.lib.on_install then
-    if type(info.lib.on_install) == "function" then
-      info.lib.on_install()
-    elseif type(info.lib.on_install) == "string" then
-      os.execute(info.lib.on_install)
+  if info.package.on_install then
+    if type(info.package.on_install) == "function" then
+      info.package.on_install()
+    elseif type(info.package.on_install) == "string" then
+      os.execute(info.package.on_install)
     end
   end
   return true
@@ -343,11 +354,22 @@ function cherry.run(d, a)
   local k = (ffi.os == "Windows" and [[\]] or "/")
   local o = (ffi.os == "Windows" and "&" or "&&")
   local info = cherry.read_info(string.gsub(d, "/", k))
+  
+  -- Hack was done to keep compatibility!
+  if not info.package then
+    info.package = info.lib or nil
+  end
+  
+  if info.package.license and not info.package.licenses then
+    info.package.licenses = table.pack(info.package.license)
+    info.package.licenses.n = nil
+  end
+  
   if cherry.valid(d) then
     if info._APP then
-      for i in ipairs(info.lib.src) do
-        if (string.match(info.lib.src[i], info.lib.main)) then
-          os.execute("cd " .. d .. " " .. o .. " luajit " .. info.lib.main .. " " .. (unpack(a) or ""))
+      for i in ipairs(info.package.src) do
+        if (string.match(info.package.src[i], info.package.main)) then
+          os.execute("cd " .. d .. " " .. o .. " luajit " .. info.package.main .. " " .. (unpack(a) or ""))
           break
         end
       end
@@ -378,7 +400,7 @@ function cherry.create(d, l, a)
   _APP = ]] .. q .. "," .. [[
   
   description = "package-description",
-  lib = {
+  package = {
     src = {
       ]] .. '"' .. t .. '"' .. "\n" .. [[
     },
