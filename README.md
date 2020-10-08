@@ -56,7 +56,7 @@ cherry add Rabios/cherry-test D:\cherry-app
 
 > NOTE: If you asked by cherry if `cherry-app` package would be app then input Y for yes.
 
-We will assume you use `cherry-test` as library, Simple when you created cherry package `cherry-app`, require package in the main lua file you provided to `cherry-app` package.
+We will assume you use `cherry-test` as library, Simple when you created cherry package `cherry-app`, require package in the main Lua file you provided to `cherry-app` package.
 
 ```lua
 local t = require("test")
