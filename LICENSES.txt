@@ -1,4 +1,4 @@
-This file contains third party licenses for the following softwares and libraries used by the repository:
+﻿This file contains third party licenses for the following softwares and libraries used by the repository:
 
 1. Lua
 2. LuaJIT

@@ -1,17 +1,16 @@
 -- Written by Rabia Alhaffar in 4/Octorber/2020
 -- Cherry package manager source code!
--- VERSION: v0.1 (7/October/2020)
--- TODO: Fix folders problem!
+-- VERSION: v0.2 (8/October/2020)
 if not require("jit") then
   print("CHERRY >> ERROR: NOT POSSIBLE TO USE NON-LUAJIT COMPILER WITH CHERRY!")
   return false
 end
 local ffi = require("ffi")
 local cherry = {
-  _VERSION = 0.1,
+  _VERSION = 0.2,
   _URL = "https://github.com/Rabios/cherry",
   _PATH = string.gsub(debug.getinfo(1).short_src, "/", (ffi.os == "Windows" and [[\]] or "/")),
-  _UPDATELINK = "https://raw.githubusercontent.com/Rabios/cherry/master/cherry.lua",
+  _UPDATELINK = "https://github.com/Rabios/cherry/archive/master.zip",
   _AUTHOR = "steria773 (Rabia Alhaffar)",
 }
 print([[
@@ -22,7 +21,7 @@ _|        _|_|_|_|  _|_|_|    _|_|_|    _|_|_|        _|
 _|        _|    _|  _|        _|    _|  _|    _|      _|      
   _|_|_|  _|    _|  _|_|_|_|  _|    _|  _|    _|      _|      
 =============================================================]])
-print("Cherry " .. cherry._VERSION .. " by " .. cherry._AUTHOR .. ", " .. cherry._URL)
+print("Cherry v" .. cherry._VERSION .. " by " .. cherry._AUTHOR .. ", " .. cherry._URL)
 print([[
 ==================
      COMMANDS
@@ -34,7 +33,8 @@ cherry valid dir                          Validate cherry package from directory
 cherry new dir                            Setup a new cherry package in directory
 cherry run dir                            Run package with LuaJIT in case it's app
 cherry add package dir                    Same as cherry get command but installs package directly in same directory
-cherry remove package-dir                 If package in directory is valid then remove it
+cherry uninstall package-dir              If package in directory is valid then remove it
+cherry remove package-name package-dir    Removes package from directory of package
 cherry update                             Updates cherry package manager
 ]])
 
@@ -68,6 +68,8 @@ end
 function cherry.dir(s)
   return ffi.os == "Windows" and cherry.getPath(s, "\\") or cherry.getPath(s)
 end
+
+cherry._DIR = cherry.dir(cherry._PATH)
 
 function cherry.read_info(f)
   return dofile(f .. "/.cherry")
@@ -159,19 +161,23 @@ function cherry.get(p, d, b, q, add)
   return true
 end
 
-function cherry.remove(p)
+function cherry.uninstall(p)
   local k = (ffi.os == "Windows" and [[\]] or "/")
   if cherry.valid(p) then
     local info = cherry.read_info(p)
-    cherry.print("CHERRY >> INFO: REMOVING PACKAGE " .. info._NAME .. "...\n")
-    if type(info.lib.on_remove) == "function" then
-      info.lib.on_remove()
-    elseif type(info.lib.on_remove) == "string" then
-      os.execute(info.lib.on_remove)
-    end
+    cherry.print("CHERRY >> INFO: UNINSTALLING PACKAGE " .. info._NAME .. "...\n")
     os.execute(ffi.os == "Windows" and "rmdir /Q /S " .. string.gsub(p, "/", k) or "rm -r -f " .. string.gsub(p, "/", k))
-    cherry.print("CHERRY >> INFO: PACKAGE REMOVED SUCCESSFULLY!\n")
+    cherry.print("CHERRY >> INFO: PACKAGE UNINSTALLED SUCCESSFULLY!\n")
   end
+end
+
+function cherry.remove(p, d)
+  local k = (ffi.os == "Windows" and [[\]] or "/")
+  local info = dofile(string.gsub(d .. "/" .. p .. ".files", "/", k))
+  for f in ipairs(info) do
+    os.execute("erase " .. string.gsub(d, "/", k) .. k .. info[f])
+  end
+  os.execute("erase " .. string.gsub(d .. "/" .. p .. ".files", "/", k))
 end
 
 function cherry.install(s, d)
@@ -185,6 +191,8 @@ function cherry.install(s, d)
   
   local c = (ffi.os == "Windows" and "copy /Y " or [[\cp ]])
   local k = (ffi.os == "Windows" and "\\" or "/")
+  local pf = io.open(d .. "/" .. info._NAME .. ".files", "w")
+  pf:write("return { ")
   
   if info._OS then
     if not info._OS == "global" then
@@ -230,8 +238,11 @@ function cherry.install(s, d)
     if #info.lib.src > 0 then
       for f in ipairs(info.lib.src) do
         if string.match(info.lib.src[f], ".lua") then
-          --os.execute("mkdir " .. d .. k .. cherry.dir(info.lib.src[f]))
+          if not cherry.dir(info.lib.src[f]) == info.lib.src[f] then
+            os.execute("mkdir " .. cherry.dir(d .. k .. info.lib.src[f]))
+          end
           os.execute(c .. string.gsub(s, "/", k) .. k .. string.gsub(info.lib.src[f], "/", k) .. " " .. d)
+          pf:write('"' .. string.gsub(info.lib.src[f], "/", k) .. '"' .. ", ")
         end
       end
     else
@@ -246,8 +257,11 @@ function cherry.install(s, d)
   if info.lib.shared then
     if #info.lib.shared > 0 then
       for f in ipairs(info.lib.shared) do
-        if (string.match(info.lib.shared[f], ".so") or string.match(info.lib.shared[f], ".dll") or string.match(info.lib.shared[f], ".dylib") or string.match(info.lib.shared[f], ".a") or string.match(info.lib.shared[f], ".o") or string.match(info.lib.shared[f], ".lib")) then
-          --os.execute("mkdir " .. d .. k .. cherry.dir(info.lib.shared[f]))
+        if string.match(info.lib.shared[f], ".so") or string.match(info.lib.shared[f], ".dll") or string.match(info.lib.shared[f], ".dylib") or string.match(info.lib.shared[f], ".a") or string.match(info.lib.shared[f], ".o") or string.match(info.lib.shared[f], ".lib") then
+          if not cherry.dir(info.lib.shared[f]) == info.lib.shared[f] then
+            os.execute("mkdir " .. cherry.dir(d .. k .. info.lib.shared[f]))
+          end
+          pf:write('"' .. string.gsub(info.lib.shared[f], "/", k) .. '"' .. ", ")
           os.execute(c .. string.gsub(s, "/", k) .. k .. string.gsub(info.lib.shared[f], "/", k) .. " " .. d)
         end
       end
@@ -257,8 +271,12 @@ function cherry.install(s, d)
   if info.lib.resources then
     if #info.lib.resources > 0 then
       for f in ipairs(info.lib.resources) do
-        if not (string.match(info.lib.resources[f], ".lua") or string.match(info.lib.resources[f], ".so") or string.match(info.lib.resources[f], ".dll") or string.match(info.lib.resources[f], ".dylib") or string.match(info.lib.resources[f], ".a") or string.match(info.lib.resources[f], ".o") or string.match(info.lib.resources[f], ".lib")) then
-          --os.execute("mkdir " .. d .. k .. cherry.dir(info.lib.resources[f]))
+        if not (string.match(info.lib.resources[f], ".lua") and string.match(info.lib.resources[f], ".so") and string.match(info.lib.resources[f], ".dll") and string.match(info.lib.resources[f], ".dylib") and string.match(info.lib.resources[f], ".a") and string.match(info.lib.resources[f], ".o") and string.match(info.lib.resources[f], ".lib")) then
+          if not cherry.dir(info.lib.resources[f]) == info.lib.resources[f] then
+            os.execute("mkdir " .. cherry.dir(d .. k .. info.lib.resources[f]))
+          end
+          os.execute("mkdir " .. d .. k .. info.lib.resources[f])
+          pf:write('"' .. string.gsub(info.lib.resources[f], "/", k) .. '"' .. ", ")
           os.execute(c .. string.gsub(s, "/", k) .. k .. string.gsub(info.lib.resources[f], "/", k) .. " " .. d)
         end
       end
@@ -266,12 +284,12 @@ function cherry.install(s, d)
   end
     
   if info.lib.license then
-    os.execute("mkdir " .. d .. k .. cherry.dir(info.lib.license))
+    pf:write('"' .. string.gsub(info._NAME .. "-" .. info.lib.license, "/", k) .. '"' .. ", ")
     os.execute(c .. string.gsub(s, "/", k) .. k .. info.lib.license .. " " .. d .. k .. info._NAME .. "-" .. info.lib.license)
   end
   
   if info.lib.readme then
-    os.execute("mkdir " .. d .. k .. cherry.dir(info.lib.readme))
+    pf:write('"' .. string.gsub(info._NAME .. "-" .. info.lib.readme, "/", k) .. '"' .. ", ")
     os.execute(c .. string.gsub(s, "/", k) .. k .. info.lib.readme .. " " .. d .. k .. info._NAME .. "-" .. info.lib.readme)
   end
   
@@ -284,6 +302,7 @@ function cherry.install(s, d)
         else
           os.execute("curl " .. info.lib.external_files[f] .. " -L -o " .. d)
         end
+        pf:write('"' .. info.lib.external_files[f] .. '"' .. ", ")
       end
     end
   end
@@ -297,12 +316,16 @@ function cherry.install(s, d)
     end
   end
   
+  pf:write("}")
+  pf:close()
   cherry.print("CHERRY >> INFO: PACKAGE " .. info._NAME .. " INSTALLED SUCCESSFULLY!\n")
   os.execute(ffi.os == "Windows" and "rmdir /Q /S " .. string.gsub(s, "/", k) or "rm -r -f " .. string.gsub(s, "/", k))
-  if type(info.lib.on_install) == "function" then
-    info.lib.on_install()
-  elseif type(info.lib.on_install) == "string" then
-    os.execute(info.lib.on_install)
+  if info.lib.on_install then
+    if type(info.lib.on_install) == "function" then
+      info.lib.on_install()
+    elseif type(info.lib.on_install) == "string" then
+      os.execute(info.lib.on_install)
+    end
   end
   return true
 end
@@ -363,13 +386,14 @@ end
 
 function cherry.update()
   local k = (ffi.os == "Windows" and [[\]] or "/")
-  local f = string.gsub(debug.getinfo(1).short_src, "/", k)
+  local d = cherry._DIR
   local l = cherry._UPDATELINK
+  local i = cherry._DIR .. k .. "cherry.zip"
   cherry.print("CHERRY >> INFO: UPDATING CHERRY...\n")
   if ffi.os == "Windows" then
-    return os.execute("start /B /wait curl " .. l .. " -L -o " .. f)
+    os.execute("start /B /wait curl " .. l .. " -L -o " .. i .. " & 7z x " .. i .. " -o" .. d .. " -y & del " .. i)
   else
-    return os.execute("curl " .. l .. " -L -o " .. f)
+    os.execute("curl " .. l .. " -L -o " .. i .. " && " .. "unzip " .. i .. " -d " .. d .. " && rm -rf " .. i)
   end
 end
 
@@ -401,9 +425,13 @@ for a in ipairs(arg) do
     local q = arg[a + 4] or "github"
     local add = true
     cherry.get(p, d, b, q, add)
+  elseif arg[a] == "uninstall" then
+    local p = arg[a + 1]
+    cherry.uninstall(p)
   elseif arg[a] == "remove" then
     local p = arg[a + 1]
-    cherry.remove(p)
+    local d = arg[a + 2]
+    cherry.remove(p, d)
   elseif arg[a] == "install" then
     local s = arg[a + 1]
     local d = arg[a + 2]

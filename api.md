@@ -15,6 +15,7 @@ cherry._URL         --> returns cherry repository link
 cherry._AUTHOR      --> returns cherry author
 cherry._PATH        --> returns file path of cherry
 cherry._UPDATELINK  --> returns cherry update link
+cherry._DIR         --> returns directory cherry lives
 ```
 
 ### `cherry.print(s)`
@@ -45,7 +46,11 @@ Checks if package is valid to use.
 
 Gets package with name `p` in directory `d`, With branch `b` and channel `q`, With option to auto install in directory `d` as boolean `add` (true/false)
 
-### `cherry.remove(d)`
+### `cherry.remove(p, d)`
+
+Removes package with name `p` in project/package directory `p`.
+
+### `cherry.uninstall(d)`
 
 Removes package from directory `d` if package is valid.
 

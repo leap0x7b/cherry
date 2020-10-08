@@ -1,7 +1,5 @@
 # cherry
 
-> NOTE: This is work in progress!
-
 Cherry or cherry (You name it) is package manager made for LuaJIT, Started since 6/October/2020 in goal of bringing a solution for LuaJIT projects and bindings, Also it can be used to distribute Lua command-line based apps from source!
 
 ### Brief
@@ -41,7 +39,8 @@ cherry valid dir                          Validate cherry package from directory
 cherry new dir                            Setup a new cherry package in directory
 cherry run dir                            Run package with LuaJIT in case it's app
 cherry add package dir                    Same as cherry get command but installs package directly in same directory
-cherry remove package-dir                 If package in directory is valid then remove it
+cherry uninstall package-dir              If package in directory is valid then remove it
+cherry remove package-name package-dir    Removes package from directory of package
 cherry update                             Updates cherry package manager
 ```
 

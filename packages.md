@@ -26,7 +26,9 @@ cherry get package-user/package-repo-name dir master github
 
 ### Removing a package
 
-If a package is valid you can remove it, Simply type `cherry remove package-dir`.
+If a you installed package in package you made and it's valid you can remove it, Simply type `cherry remove package-name package-dir`.
+
+Or if installed package is in folder... Use `cherry uninstall package-dir` to remove package.
 
 ### Running a package
 
