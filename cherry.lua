@@ -1,7 +1,6 @@
 -- Written by Rabia Alhaffar in 4/Octorber/2020
 -- Cherry package manager source code!
 -- VERSION: v0.2 (8/October/2020)
--- TODO: Fix update problems!
 if not require("jit") then
   print("CHERRY >> ERROR: NOT POSSIBLE TO USE NON-LUAJIT COMPILER WITH CHERRY!")
   return false
@@ -276,7 +275,6 @@ function cherry.install(s, d)
           if not cherry.dir(info.lib.resources[f]) == info.lib.resources[f] then
             os.execute("mkdir " .. cherry.dir(d .. k .. info.lib.resources[f]))
           end
-          os.execute("mkdir " .. d .. k .. info.lib.resources[f])
           pf:write('"' .. string.gsub(info.lib.resources[f], "/", k) .. '"' .. ", ")
           os.execute(c .. string.gsub(s, "/", k) .. k .. string.gsub(info.lib.resources[f], "/", k) .. " " .. d)
         end
