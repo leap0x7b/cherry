@@ -82,14 +82,13 @@ function cherry.valid(f)
   local t = { "_NAME", "_URL", "_AUTHOR", "_LICENSE", "_VERSION", "_CODENAME", "_BRANCH", "_APP", "description", "package" }
   
   -- Hack was done to keep compatibility!
-  if not info.package then
+  if info.lib and not info.package then
     t[11] = "lib"
-    info.package = info.lib or nil
+    info.package = info.lib
   end
   
   if info.package.license and not info.package.licenses then
-    info.package.licenses = table.pack(info.package.license)
-    info.package.licenses.n = nil
+    info.package.licenses = { info.package.license }
   end
   
   for x in ipairs(t) do
@@ -193,6 +192,16 @@ end
 
 function cherry.install(s, d)
   local info = cherry.read_info(s)
+  
+  -- Hack was done to keep compatibility!
+  if not info.package then
+    info.package = info.lib or nil
+  end
+  
+  if info.package.license and not info.package.licenses then
+    info.package.licenses = { info.package.license }
+  end
+  
   os.execute("mkdir " .. d)
   if not cherry.valid(s) then
     cherry.print("CHERRY >> ERROR: FAILED TO INSTALL PACKAGE! (0)\n")
@@ -361,8 +370,7 @@ function cherry.run(d, a)
   end
   
   if info.package.license and not info.package.licenses then
-    info.package.licenses = table.pack(info.package.license)
-    info.package.licenses.n = nil
+    info.package.licenses = { info.package.license }
   end
   
   if cherry.valid(d) then
