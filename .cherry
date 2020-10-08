@@ -20,7 +20,10 @@ return {
 	  "packages.md",
 	},
 	readme = "README.md",
-	licenses = { "LICENSE.txt", "LICENSES.txt" },
+	licenses = {
+    "LICENSE.txt",
+    "LICENSES.txt"
+  },
 	main = "cherry.lua",
   }
 }
