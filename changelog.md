@@ -4,6 +4,7 @@
 
 - Renamed `lib` table to `package`, But you can still use `lib` as cherry is backward-compatible!
 - Added more debug info when running commands!
+- Better layout for commands list when running cherry!
 
 > NOTE: Compatibility was made from this version so it can run packages that were created with old versions of cherry.
 
