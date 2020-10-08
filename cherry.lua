@@ -1,6 +1,7 @@
 -- Written by Rabia Alhaffar in 4/Octorber/2020
 -- Cherry package manager source code!
 -- VERSION: v0.2 (8/October/2020)
+-- TODO: Fix update problems!
 if not require("jit") then
   print("CHERRY >> ERROR: NOT POSSIBLE TO USE NON-LUAJIT COMPILER WITH CHERRY!")
   return false
@@ -72,7 +73,7 @@ end
 cherry._DIR = cherry.dir(cherry._PATH)
 
 function cherry.read_info(f)
-  return dofile(f .. "/.cherry")
+  return dofile(f .. "/_.cherry")
 end
 
 function cherry.valid(f)
@@ -367,7 +368,7 @@ function cherry.create(d, l, a)
   cherry.print("CHERRY >> CONFIRMATION: IS PACKAGE AN APP? [Y/N] ")
   local u = a or io.read()
   local q = string.lower(u) == "y" and "true" or string.lower(u) == "n" and "false"
-  local c = io.open(string.gsub(d, "/", k) .. k .. string.gsub("/.cherry", "/", k), "w")
+  local c = io.open(string.gsub(d, "/", k) .. k .. string.gsub("/_.cherry", "/", k), "w")
   c:write([[return {
   _NAME = "package-name",
   _URL = "https://github.com/user/package-repo",
@@ -394,6 +395,10 @@ function cherry.create(d, l, a)
   return true
 end
 
+function cherry.update()
+  cherry.add("Rabios/cherry", cherry._DIR, "master", "github", true)
+end
+
 local arg = { ... }
 for a in ipairs(arg) do
   if arg[a] == "-v" or arg[a] == "--version" then
@@ -407,12 +412,7 @@ for a in ipairs(arg) do
     table.remove(a, 1)
     cherry.run(d, a)
   elseif arg[a] == "update" then
-    local p = "Rabios/cherry"
-	  local d = cherry._DIR
-    local b = arg[a + 3] or "master"
-    local q = arg[a + 4] or "github"
-    local add = true
-    cherry.get(p, d, b, q, add)
+    cherry.update()
   elseif arg[a] == "get" then
     local p = arg[a + 1]
 	  local d = arg[a + 2]
