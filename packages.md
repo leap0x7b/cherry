@@ -89,7 +89,7 @@ return {
 - `lib.shared` (table): Table contains dll/dylib/so/lib/o/a files paths from package directory (In case you do bindings).
 - `lib.resources` (table): Table contains paths to any files that has other types than used by `lib.src` and `lib.shared` and `lib.main`
 - `lib.dependencies` (table): Table contains dependencies (Packages that is downloaded and installed from internet)
-- `lib.license` (string): License file.
+- `lib.licenses` (table): Table contains paths to licenses files.
 - `lib.readme` (string): README file.
 - `lib.external_files` (table): Single files downloaded and installed from internet!
 - `lib.on_install` (string/function): string to be executed by system or function to be called once package is installed.
