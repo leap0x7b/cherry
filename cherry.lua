@@ -288,6 +288,11 @@ function cherry.install(s, d)
     os.execute(c .. string.gsub(s, "/", k) .. k .. info.lib.license .. " " .. d .. k .. info._NAME .. "-" .. info.lib.license)
   end
   
+  if info.lib.third_party_licenses then
+    pf:write('"' .. string.gsub(info._NAME .. "-" .. info.lib.third_party_licenses, "/", k) .. '"' .. ", ")
+    os.execute(c .. string.gsub(s, "/", k) .. k .. info.lib.third_party_licenses .. " " .. d .. k .. info._NAME .. "-" .. info.lib.third_party_licenses)
+  end
+  
   if info.lib.readme then
     pf:write('"' .. string.gsub(info._NAME .. "-" .. info.lib.readme, "/", k) .. '"' .. ", ")
     os.execute(c .. string.gsub(s, "/", k) .. k .. info.lib.readme .. " " .. d .. k .. info._NAME .. "-" .. info.lib.readme)
@@ -388,16 +393,16 @@ function cherry.update()
   local k = (ffi.os == "Windows" and [[\]] or "/")
   local d = cherry._DIR
   local l = cherry._UPDATELINK
-  local i = cherry.dir(d .. "cherry-latest.zip")
+  local i = string.gsub(d .. "\\cherry-latest.zip", "/", k)
   local c = (ffi.os == "Windows" and "copy /Y " or "cp -a ")
   cherry.print("CHERRY >> INFO: UPDATING CHERRY...\n")
-  os.execute("mkdir " .. j)
+  os.execute("mkdir " .. string.gsub(d .. "\\cherry-master", "/", k))
   if ffi.os == "Windows" then
     os.execute("start /B /wait curl " .. l .. " -L -o " .. i .. " & 7z x " .. i .. " -o" .. d .. " -y & del " .. i)
-    os.execute(c .. "\\cherry-master" .. [[\*.* ]] .. d .. " & rmdir /Q /S " .. d .. "\\cherry-master")
+    os.execute(c .. d .. "\\cherry-master" .. [[\*.* ]] .. d .. " & rmdir /Q /S " .. d .. "\\cherry-master")
   else
     os.execute("curl " .. l .. " -L -o " .. i .. " && " .. "unzip " .. i .. " -d " .. d .. " && rm -rf " .. i)
-    os.execute(c .. "/cherry-master" .. " " .. d .. " && rm -r -f " .. d .. "/cherry-master")
+    os.execute(c .. d .. "/cherry-master" .. " " .. d .. " && rm -r -f " .. d .. "/cherry-master")
   end
 end
 
