@@ -2,10 +2,12 @@
 
 ### v0.2 (8/October/2020)
 
+- Add possibility of folders and branching!
 - Added ability to remove package installed to use in package with command `remove`.
 - Renamed old `remove` command to `uninstall`.
 - Improved update so it updates all other stuff source code.
-- Made `lib.license` a table under name `lib.licenses` (For adding 3rd party licenses).
+- Added package file for cherry so you can also update it in same cherry directory.
+- Fixed problem apps can't run in some cases!
 
 ### v0.1 (7/October/2020)
 

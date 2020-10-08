@@ -1,6 +1,7 @@
 -- Written by Rabia Alhaffar in 4/Octorber/2020
 -- Cherry package manager source code!
 -- VERSION: v0.2 (8/October/2020)
+-- TODO: Fix update problems!
 if not require("jit") then
   print("CHERRY >> ERROR: NOT POSSIBLE TO USE NON-LUAJIT COMPILER WITH CHERRY!")
   return false
@@ -286,13 +287,19 @@ function cherry.install(s, d)
   if info.lib.licenses then
     if #info.lib.licenses > 0 then
       for f in ipairs(info.lib.licenses) do
-        pf:write('"' .. string.gsub(info._NAME .. "-" .. info.lib.licenses[f], "/", k) .. '"' .. ", ")
-        os.execute(c .. string.gsub(s, "/", k) .. k .. info.lib.licenses[f] .. " " .. d .. k .. info._NAME .. "-" .. info.lib.licenses[f])
+        if not cherry.dir(info.lib.licenses[f]) == info.lib.licenses[f] then
+          os.execute("mkdir " .. cherry.dir(d .. k .. info.lib.licenses[f]))
+        end
+        pf:write('"' .. string.gsub(string.gsub(info.lib.licenses[f], "LICENSE", info._NAME .. "-LICENSE"), "/", k) .. '"' .. ", ")
+        os.execute(c .. string.gsub(s, "/", k) .. k .. info.lib.licenses[f] .. " " .. d .. k .. string.gsub(string.gsub(info.lib.licenses[f], "LICENSE", info._NAME .. "-LICENSE"), "/", k))
       end
     end
   end
   
   if info.lib.readme then
+    if not cherry.dir(info.lib.readme) == info.lib.readme then
+      os.execute("mkdir " .. cherry.dir(d .. k .. info.lib.readme))
+    end
     pf:write('"' .. string.gsub(info._NAME .. "-" .. info.lib.readme, "/", k) .. '"' .. ", ")
     os.execute(c .. string.gsub(s, "/", k) .. k .. info.lib.readme .. " " .. d .. k .. info._NAME .. "-" .. info.lib.readme)
   end
@@ -342,7 +349,7 @@ function cherry.run(d, a)
     if info._APP then
       for i in ipairs(info.lib.src) do
         if (string.match(info.lib.src[i], info.lib.main)) then
-          os.execute("cd " .. d .. " " .. o .. " luajit " .. d .. k .. info.lib.main .. " " .. (unpack(a) or ""))
+          os.execute("cd " .. d .. " " .. o .. " luajit " .. info.lib.main .. " " .. (unpack(a) or ""))
           break
         end
       end
@@ -388,23 +395,6 @@ function cherry.create(d, l, a)
   return true
 end
 
-function cherry.update()
-  local k = (ffi.os == "Windows" and [[\]] or "/")
-  local d = cherry._DIR
-  local l = cherry._UPDATELINK
-  local i = string.gsub(d .. "\\cherry-latest.zip", "/", k)
-  local c = (ffi.os == "Windows" and "copy /Y " or "cp -a ")
-  cherry.print("CHERRY >> INFO: UPDATING CHERRY...\n")
-  os.execute("mkdir " .. string.gsub(d .. "\\cherry-master", "/", k))
-  if ffi.os == "Windows" then
-    os.execute("start /B /wait curl " .. l .. " -L -o " .. i .. " & 7z x " .. i .. " -o" .. d .. " -y & del " .. i)
-    os.execute(c .. d .. "\\cherry-master" .. [[\*.* ]] .. d .. " & rmdir /Q /S " .. d .. "\\cherry-master")
-  else
-    os.execute("curl " .. l .. " -L -o " .. i .. " && " .. "unzip " .. i .. " -d " .. d .. " && rm -rf " .. i)
-    os.execute(c .. d .. "/cherry-master" .. " " .. d .. " && rm -r -f " .. d .. "/cherry-master")
-  end
-end
-
 local arg = { ... }
 for a in ipairs(arg) do
   if arg[a] == "-v" or arg[a] == "--version" then
@@ -418,7 +408,7 @@ for a in ipairs(arg) do
     table.remove(a, 1)
     cherry.run(d, a)
   elseif arg[a] == "update" then
-    cherry.update()
+    cherry.add("Rabios/cherry", cherry._DIR, "master", "github", true)
   elseif arg[a] == "get" then
     local p = arg[a + 1]
 	  local d = arg[a + 2]
