@@ -1,7 +1,6 @@
 -- Written by Rabia Alhaffar in 4/Octorber/2020
 -- Cherry package manager source code!
 -- VERSION: v0.2 (8/October/2020)
--- TODO: Fix update problems!
 if not require("jit") then
   print("CHERRY >> ERROR: NOT POSSIBLE TO USE NON-LUAJIT COMPILER WITH CHERRY!")
   return false
@@ -408,7 +407,12 @@ for a in ipairs(arg) do
     table.remove(a, 1)
     cherry.run(d, a)
   elseif arg[a] == "update" then
-    cherry.add("Rabios/cherry", cherry._DIR, "master", "github", true)
+    local p = "Rabios/cherry"
+	  local d = cherry._DIR
+    local b = arg[a + 3] or "master"
+    local q = arg[a + 4] or "github"
+    local add = true
+    cherry.get(p, d, b, q, add)
   elseif arg[a] == "get" then
     local p = arg[a + 1]
 	  local d = arg[a + 2]
