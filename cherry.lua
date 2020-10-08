@@ -283,14 +283,13 @@ function cherry.install(s, d)
     end
   end
     
-  if info.lib.license then
-    pf:write('"' .. string.gsub(info._NAME .. "-" .. info.lib.license, "/", k) .. '"' .. ", ")
-    os.execute(c .. string.gsub(s, "/", k) .. k .. info.lib.license .. " " .. d .. k .. info._NAME .. "-" .. info.lib.license)
-  end
-  
-  if info.lib.third_party_licenses then
-    pf:write('"' .. string.gsub(info._NAME .. "-" .. info.lib.third_party_licenses, "/", k) .. '"' .. ", ")
-    os.execute(c .. string.gsub(s, "/", k) .. k .. info.lib.third_party_licenses .. " " .. d .. k .. info._NAME .. "-" .. info.lib.third_party_licenses)
+  if info.lib.licenses then
+    if #info.lib.licenses > 0 then
+      for f in ipairs(info.lib.licenses) do
+        pf:write('"' .. string.gsub(info._NAME .. "-" .. info.lib.licenses[f], "/", k) .. '"' .. ", ")
+        os.execute(c .. string.gsub(s, "/", k) .. k .. info.lib.licenses[f] .. " " .. d .. k .. info._NAME .. "-" .. info.lib.licenses[f])
+      end
+    end
   end
   
   if info.lib.readme then

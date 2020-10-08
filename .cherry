@@ -1,0 +1,26 @@
+return {
+  _NAME = "cherry",
+  _URL = "https://github.com/Rabios/cherry",
+  _LICENSE = "MIT (X11)",
+  _CODENAME = "cherry-pm",
+  _AUTHOR = "Rabia Alhaffar",
+  _VERSION = "v0.2",
+  _BRANCH = "master",
+  _APP = false,
+  description = [[ The super package manager for LuaJIT! ]],
+  lib = {
+    src = {
+	  "cherry.lua"
+	},
+	resources = {
+	  "cherry.cmd",
+	  "cherry.sh",
+	  "api.md",
+	  "changelog.md",
+	  "packages.md",
+	},
+	readme = "README.md",
+	licenses = { "LICENSE.txt" },
+	main = "cherry.lua",
+  }
+}
