@@ -14,13 +14,13 @@ local cherry = {
   _AUTHOR = "steria773 (Rabia Alhaffar)",
 }
 print([[
-=============================================================
+============================================================
   _|_|_|  _|    _|  _|_|_|_|  _|_|_|    _|_|_|    _|      _|  
 _|        _|    _|  _|        _|    _|  _|    _|    _|  _|    
 _|        _|_|_|_|  _|_|_|    _|_|_|    _|_|_|        _|      
 _|        _|    _|  _|        _|    _|  _|    _|      _|      
   _|_|_|  _|    _|  _|_|_|_|  _|    _|  _|    _|      _|      
-=============================================================]])
+============================================================]])
 print("Cherry v" .. cherry._VERSION .. " by " .. cherry._AUTHOR .. ", " .. cherry._URL)
 print([[
 ==================
@@ -427,6 +427,7 @@ function cherry.create(d, l, a)
   m:write("-- TODO: Code!")
   m:close()
   cherry.print("CHERRY >> INFO: PACKAGE IN DIRECTORY " .. d .. " CREATED SUCCESSFULLY!\n")
+	cherry.print("CHERRY >> NOTE: WHEN YOU DISTRIBUTE YOUR PACKAGE, MAKE SURE YOU EDIT PACKAGE PROPERTIES VIA FILE CALLED .cherry (IN DIRECTORY OF PACKAGE)\n")
   return true
 end
 
