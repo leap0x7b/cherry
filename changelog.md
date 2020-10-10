@@ -1,5 +1,11 @@
 # CHANGELOG
 
+### v0.4 (10/October/2020)
+
+- Added ability to create files list file for cherry package if does not comes with one.
+- Added ability to get info of cherry package!
+- Provided better logs!
+
 ### v0.3 (9/October/2020)
 
 - Renamed `lib` table to `package`, But you can still use `lib` as cherry is backward-compatible!

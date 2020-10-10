@@ -1,13 +1,13 @@
 -- Written by Rabia Alhaffar in 4/Octorber/2020
 -- Cherry package manager source code!
--- VERSION: v0.3 (9/October/2020)
+-- VERSION: v0.4 (10/October/2020)
 if not require("jit") then
   print("CHERRY >> ERROR: NOT POSSIBLE TO USE NON-LUAJIT COMPILER WITH CHERRY!")
   return false
 end
 local ffi = require("ffi")
 local cherry = {
-  _VERSION = 0.3,
+  _VERSION = 0.4,
   _URL = "https://github.com/Rabios/cherry",
   _PATH = string.gsub(debug.getinfo(1).short_src, "/", (ffi.os == "Windows" and [[\]] or "/")),
   _UPDATELINK = "https://github.com/Rabios/cherry/archive/master.zip",
@@ -32,11 +32,23 @@ cherry install src dir                          Installs cherry package from fol
 cherry valid dir                                Validate cherry package from directory
 cherry new dir                                  Setup a new cherry package in directory
 cherry run dir                                  Run package with LuaJIT in case it's app
-cherry add package dir                          Same as cherry get command but installs package directly in same directory
-cherry uninstall package-dir                    If package in directory is valid then remove it
-cherry remove package-name package-dir          Removes package from directory of package
+cherry info dir                                 Gives info about cherry package if valid
+cherry patch dir                                Creates files list for cherry package from cherry package config in directory
+cherry add package dir                          Downloads and installs cherry package directly in same directory
+cherry uninstall package-dir                    If cherry package in directory is valid then remove it
+cherry remove package-name package-dir          Removes cherry package from directory of another cherry package
 cherry update                                   Updates cherry package manager
 ]])
+
+-- Polyfill for table.unpack
+-- This function implemented from link below!
+-- http://www.lua.org/pil/5.1.html
+table.unpack = function(t, i)
+  i = i or 1
+  if (t[i] ~= nil) then
+    return t[i], table.unpack(t, i + 1)
+  end
+end
 
 -- https://stackoverflow.com/a/7153689/10896648
 local write = io.write
@@ -131,14 +143,14 @@ function cherry.get(p, d, b, q, add)
     l = "https://bitbucket.org/" .. p .. "/get/" .. b .. ".zip"
   end
   
-  cherry.print("DOWNLOADING PACKAGE " .. p .. " FROM " .. l .. "\n")
+  cherry.print("CHERRY >> INFO: DOWNLOADING PACKAGE " .. p .. " FROM " .. l .. "\n")
   local i = d .. k .. string.gsub(p, "/", ".") .. ".zip"
   if ffi.os == "Windows" then
     os.execute("start /B /wait curl " .. l .. " -L -o " .. i .. " & 7z x " .. i .. " -o" .. d .. " -y & del " .. i)
   else
     os.execute("curl " .. l .. " -L -o " .. i .. " && " .. "unzip " .. i .. " -d " .. d .. " && rm -rf " .. i)
   end
-  cherry.print("PACKAGE " .. p .. " DOWNLOADED SUCCESSFULLY!\n")
+  cherry.print("CHERRY >> INFO: PACKAGE " .. p .. " DOWNLOADED SUCCESSFULLY!\n")
   
   local j = ""
   local g = false
@@ -156,10 +168,10 @@ function cherry.get(p, d, b, q, add)
     if add then
       cherry.install(r, d)
     else
-      cherry.print("CHERRY >> CONFIRMATION: DO YOU WANT TO INSTALL " .. (info._NAME or p) .. " RIGHT NOW [Y/N]? ")
+      cherry.print("CHERRY >> CONFIRM: DO YOU WANT TO INSTALL " .. (info._NAME or p) .. " RIGHT NOW [Y/N]? ")
       local w = io.read()
       if string.lower(w) == "y" then
-        cherry.print("CHERRY >> CONFIRMATION: WHERE TO INSTALL " .. (info._NAME or p) .. "? (INPUT DIRECTORY!) ")
+        cherry.print("CHERRY >> CONFIRM: WHERE TO INSTALL " .. (info._NAME or p) .. "? (INPUT DIRECTORY!) ")
         local kk = io.read()
         cherry.install(r, kk)
       elseif string.lower(w) == "n" then
@@ -186,12 +198,12 @@ end
 function cherry.remove(p, d)
   local k = (ffi.os == "Windows" and [[\]] or "/")
   local info = dofile(string.gsub(d .. "/" .. p .. ".files", "/", k))
-  cherry.print("REMOVING PACKAGE " .. p .. " FROM " .. d .. "\n")
+  cherry.print("CHERRY >> INFO: REMOVING PACKAGE " .. p .. " FROM " .. d .. "\n")
   for f in ipairs(info) do
     os.execute("erase " .. string.gsub(d, "/", k) .. k .. info[f])
   end
   os.execute("erase " .. string.gsub(d .. "/" .. p .. ".files", "/", k))
-  cherry.print("PACKAGE " .. p .. " REMOVED SUCCESSFULLY!\n")
+  cherry.print("CHERRY >> INFO: PACKAGE " .. p .. " REMOVED SUCCESSFULLY!\n")
 end
 
 function cherry.install(s, d)
@@ -394,15 +406,117 @@ function cherry.run(d, a)
   end
 end
 
+function cherry.info(d)
+  if cherry.valid(d) then
+    local info = cherry.read_info(d)
+    local p = info._NAME
+    cherry.print("CHERRY >> INFO: COLLECTING INFO FROM " .. p .. "...\n")
+    local t1 = { "_URL", "_AUTHOR", "_LICENSE", "_VERSION", "_CODENAME", "_BRANCH", "description" }
+    local t2 = { "src", "shared", "resources", "licenses" }
+    local t3 = { "main", "_LUA", "_OS", "_ARCH", "_CHERRY", "readme" }
+    for x in ipairs(t1) do
+      cherry.print("CHERRY >> INFO: " .. p .. " " .. string.lower(string.gsub(t1[x], "_", "")) .. ": " .. info[t1[x]] .. "\n")
+    end
+    for y in ipairs(t2) do
+      local z = info["package"][t2[y]]
+      if z ~= nil then
+        for w in ipairs(z) do
+          cherry.print("CHERRY >> INFO: " .. p .. " " .. string.gsub(t2[w], "src", "files") .. ": " .. table.unpack(z) .. "\n")
+        end
+      end
+    end
+    for q in ipairs(t3) do
+      local x = info["package"][t3[q]]
+      local r = (x or "NOT FOUND!")
+      cherry.print("CHERRY >> INFO: " .. p .. " " .. string.lower(string.gsub(t3[q], "_", "LIMIT ")) .. ": " .. r .. "\n")
+    end
+    cherry.print("CHERRY >> INFO: IS PACKAGE " .. p .. " APP: " .. (info._APP and "YES" or "NO") .. "\n")
+    cherry.print("CHERRY >> INFO: PACKAGE " .. p .. " INFORMATION COLLECTED SUCCESSFULLY!\n")
+  end
+end
+
+function cherry.patch(d)
+  if cherry.valid(d) then
+    local info = cherry.read_info(d)
+    local k = (ffi.os == "Windows" and "\\" or "/")
+    
+    -- Hack was done to keep compatibility!
+    if not info.package then
+      info.package = info.lib or nil
+    end
+    if info.package.license and not info.package.licenses then
+      info.package.licenses = { info.package.license }
+    end
+    
+    cherry.print("CHERRY >> INFO: WRITING FILES LIST FOR " .. info._NAME .. "...\n")
+    local pf = io.open(d .. "/" .. info._NAME .. ".files", "w")
+    pf:write("return { ")
+    
+    if info.package.src then
+      if #info.package.src > 0 then
+        for f in ipairs(info.package.src) do
+          if string.match(info.package.src[f], ".lua") then
+            pf:write('"' .. string.gsub(info.package.src[f], "/", k) .. '"' .. ", ")
+          end
+        end
+      end
+    end
+  
+    if info.package.shared then
+      if #info.package.shared > 0 then
+        for f in ipairs(info.package.shared) do
+          if string.match(info.package.shared[f], ".so") or string.match(info.package.shared[f], ".dll") or string.match(info.package.shared[f], ".dylib") or string.match(info.package.shared[f], ".a") or string.match(info.package.shared[f], ".o") or string.match(info.package.shared[f], ".lib") then
+            pf:write('"' .. string.gsub(info.package.shared[f], "/", k) .. '"' .. ", ")
+          end
+        end
+      end
+    end
+  
+    if info.package.resources then
+      if #info.package.resources > 0 then
+        for f in ipairs(info.package.resources) do
+          if not (string.match(info.package.resources[f], ".lua") and string.match(info.package.resources[f], ".so") and string.match(info.package.resources[f], ".dll") and string.match(info.package.resources[f], ".dylib") and string.match(info.package.resources[f], ".a") and string.match(info.package.resources[f], ".o") and string.match(info.package.resources[f], ".lib")) then
+            pf:write('"' .. string.gsub(info.package.resources[f], "/", k) .. '"' .. ", ")
+          end
+        end
+      end
+    end
+    
+    if info.package.licenses then
+      if #info.package.licenses > 0 then
+        for f in ipairs(info.package.licenses) do
+          pf:write('"' .. string.gsub(string.gsub(info.package.licenses[f], "LICENSE", info._NAME .. "-LICENSE"), "/", k) .. '"' .. ", ")
+        end
+      end
+    end
+  
+    if info.package.readme then
+      pf:write('"' .. string.gsub(info._NAME .. "-" .. info.package.readme, "/", k) .. '"' .. ", ")
+    end
+  
+    if info.package.external_files then
+      if not #info.package.external_files > 0 then
+        for f in ipairs(info.package.external_files) do
+          pf:write('"' .. info.package.external_files[f] .. '"' .. ", ")
+        end
+      end
+    end
+  
+    pf:write("}")
+    pf:close()
+    cherry.print("CHERRY >> INFO: FILES LIST FOR " .. info._NAME .. " WRITTEN SUCCESSFULLY!\n")
+  end
+end
+
 function cherry.create(d, l, a)
   local k = (ffi.os == "Windows" and [[\]] or "/")
   os.execute("mkdir " .. string.gsub(d, "/", k))
-  cherry.print("CHERRY >> CONFIRMATION: WHAT NAME OF MAIN LUA FILE? (INPUT!) ")
+  cherry.print("CHERRY >> CONFIRM: WHAT NAME OF MAIN LUA FILE? (INPUT!) ")
   local t = l or io.read()
-  cherry.print("CHERRY >> CONFIRMATION: IS PACKAGE AN APP? [Y/N] ")
+  cherry.print("CHERRY >> CONFIRM: IS PACKAGE AN APP? [Y/N] ")
   local u = a or io.read()
   local q = string.lower(u) == "y" and "true" or string.lower(u) == "n" and "false"
-  cherry.print("CREATING PACKAGE IN DIRECTORY " .. d .. "\n")
+  cherry.print("CHERRY >> INFO: CREATING PACKAGE IN DIRECTORY " .. d .. "\n")
   local c = io.open(string.gsub(d, "/", k) .. k .. string.gsub("/.cherry", "/", k), "w")
   c:write([[return {
   _NAME = "package-name",
@@ -432,7 +546,7 @@ function cherry.create(d, l, a)
 end
 
 function cherry.update()
-  cherry.print("UPDATING CHERRY...\n")
+  cherry.print("CHERRY >> INFO: UPDATING CHERRY...\n")
   cherry.get("Rabios/cherry", cherry._DIR, "master", "github", true)
 end
 
@@ -464,6 +578,12 @@ for a in ipairs(arg) do
     local q = arg[a + 4] or "github"
     local add = true
     cherry.get(p, d, b, q, add)
+  elseif arg[a] == "info" then
+    local d = arg[a + 1]
+    cherry.info(d)
+  elseif arg[a] == "patch" then
+    local d = arg[a + 1]
+    cherry.patch(d)
   elseif arg[a] == "uninstall" then
     local p = arg[a + 1]
     cherry.uninstall(p)

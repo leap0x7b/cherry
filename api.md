@@ -66,6 +66,14 @@ Runs package from directory `d`, With arguments `a`.
 
 Creates new cherry package in directory `d`, With main Lua file with name `l`, And with `a` as app or not (true, false).
 
+### `cherry.patch(d)`
+
+Creates files list for cherry package from cherry package config in directory `d`.
+
+### `cherry.info(d)`
+
+Gives info about cherry package from directory if valid
+
 ### `cherry.update()`
 
 Updates cherry package manager from source code online.

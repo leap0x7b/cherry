@@ -39,9 +39,11 @@ cherry install src dir                          Installs cherry package from fol
 cherry valid dir                                Validate cherry package from directory
 cherry new dir                                  Setup a new cherry package in directory
 cherry run dir                                  Run package with LuaJIT in case it's app
-cherry add package dir                          Same as cherry get command but installs package directly in same directory
-cherry uninstall package-dir                    If package in directory is valid then remove it
-cherry remove package-name package-dir          Removes package from directory of package
+cherry info dir                                 Gives info about cherry package if valid
+cherry patch dir                                Creates files list for cherry package from cherry package config in directory
+cherry add package dir                          Downloads and installs cherry package directly in same directory
+cherry uninstall package-dir                    If cherry package in directory is valid then remove it
+cherry remove package-name package-dir          Removes cherry package from directory of another cherry package
 cherry update                                   Updates cherry package manager
 ```
 
