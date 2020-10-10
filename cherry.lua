@@ -431,7 +431,7 @@ function cherry.info(d)
       cherry.print("CHERRY >> INFO: " .. p .. " " .. string.lower(string.gsub(t3[q], "_", "LIMIT ")) .. ": " .. r .. "\n")
     end
     cherry.print("CHERRY >> INFO: IS PACKAGE " .. p .. " APP: " .. (info._APP and "YES" or "NO") .. "\n")
-    cherry.print("CHERRY >> INFO: PACKAGE " .. p .. " INFORMATION COLLECTED SUCCESSFULLY!\n")
+    cherry.print("CHERRY >> INFO: PACKAGE " .. p .. " INFO COLLECTED SUCCESSFULLY!\n")
   end
 end
 
