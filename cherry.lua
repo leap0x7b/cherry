@@ -89,7 +89,7 @@ end
 
 function cherry.valid(f)
   local k = (ffi.os == "Windows" and [[\]] or "/")
-  cherry.print("CHERRY >> INFO: VALIDATING PACKAGE FROM " .. string.gsub(f, "/", k) .. "\n")
+  cherry.print("CHERRY >> INFO: VALIDATING PACKAGE FROM DIRECTORY " .. string.gsub(f, "/", k) .. "\n")
   local info = cherry.read_info(f)
   local t = { "_NAME", "_URL", "_AUTHOR", "_LICENSE", "_VERSION", "_CODENAME", "_BRANCH", "_APP", "description", "package" }
   
@@ -228,7 +228,7 @@ function cherry.install(s, d)
   local c = (ffi.os == "Windows" and "copy /Y " or "cp ")
   local k = (ffi.os == "Windows" and "\\" or "/")
   local pf = io.open(d .. "/" .. info._NAME .. ".files", "w")
-  pf:write("return { ")
+  pf:write("return {\n")
   
   if info._OS then
     if not info._OS == "global" then
@@ -278,7 +278,7 @@ function cherry.install(s, d)
             os.execute("mkdir " .. cherry.dir(d .. k .. info.package.src[f]))
           end
           os.execute(c .. string.gsub(s, "/", k) .. k .. string.gsub(info.package.src[f], "/", k) .. " " .. d)
-          pf:write('"' .. string.gsub(info.package.src[f], "/", k) .. '"' .. ", ")
+          pf:write("  " .. '"' .. string.gsub(info.package.src[f], "/", k) .. '"' .. ",\n")
         end
       end
     else
@@ -297,7 +297,7 @@ function cherry.install(s, d)
           if not cherry.dir(info.package.shared[f]) == info.package.shared[f] then
             os.execute("mkdir " .. cherry.dir(d .. k .. info.package.shared[f]))
           end
-          pf:write('"' .. string.gsub(info.package.shared[f], "/", k) .. '"' .. ", ")
+          pf:write("  " .. '"' .. string.gsub(info.package.shared[f], "/", k) .. '"' .. ",\n")
           os.execute(c .. string.gsub(s, "/", k) .. k .. string.gsub(info.package.shared[f], "/", k) .. " " .. d)
         end
       end
@@ -311,7 +311,7 @@ function cherry.install(s, d)
           if not cherry.dir(info.package.resources[f]) == info.package.resources[f] then
             os.execute("mkdir " .. cherry.dir(d .. k .. info.package.resources[f]))
           end
-          pf:write('"' .. string.gsub(info.package.resources[f], "/", k) .. '"' .. ", ")
+          pf:write("  " .. '"' .. string.gsub(info.package.resources[f], "/", k) .. '"' .. ",\n")
           os.execute(c .. string.gsub(s, "/", k) .. k .. string.gsub(info.package.resources[f], "/", k) .. " " .. d)
         end
       end
@@ -324,7 +324,7 @@ function cherry.install(s, d)
         if not cherry.dir(info.package.licenses[f]) == info.package.licenses[f] then
           os.execute("mkdir " .. cherry.dir(d .. k .. info.package.licenses[f]))
         end
-        pf:write('"' .. string.gsub(string.gsub(info.package.licenses[f], "LICENSE", info._NAME .. "-LICENSE"), "/", k) .. '"' .. ", ")
+        pf:write("  " .. '"' .. string.gsub(string.gsub(info.package.licenses[f], "LICENSE", info._NAME .. "-LICENSE"), "/", k) .. '"' .. ",\n")
         os.execute(c .. string.gsub(s, "/", k) .. k .. info.package.licenses[f] .. " " .. d .. k .. string.gsub(string.gsub(info.package.licenses[f], "LICENSE", info._NAME .. "-LICENSE"), "/", k))
       end
     end
@@ -334,7 +334,7 @@ function cherry.install(s, d)
     if not cherry.dir(info.package.readme) == info.package.readme then
       os.execute("mkdir " .. cherry.dir(d .. k .. info.package.readme))
     end
-    pf:write('"' .. string.gsub(info._NAME .. "-" .. info.package.readme, "/", k) .. '"' .. ", ")
+    pf:write("  " .. '"' .. string.gsub(info._NAME .. "-" .. info.package.readme, "/", k) .. '"' .. ",\n")
     os.execute(c .. string.gsub(s, "/", k) .. k .. info.package.readme .. " " .. d .. k .. info._NAME .. "-" .. info.package.readme)
   end
   
@@ -347,7 +347,7 @@ function cherry.install(s, d)
         else
           os.execute("curl " .. info.package.external_files[f] .. " -L -o " .. d)
         end
-        pf:write('"' .. info.package.external_files[f] .. '"' .. ", ")
+        pf:write("  " .. '"' .. info.package.external_files[f] .. '"' .. ",\n")
       end
     end
   end
@@ -450,13 +450,13 @@ function cherry.patch(d)
     
     cherry.print("CHERRY >> INFO: WRITING FILES LIST FOR " .. info._NAME .. "...\n")
     local pf = io.open(d .. "/" .. info._NAME .. ".files", "w")
-    pf:write("return { ")
+    pf:write("return {\n")
     
     if info.package.src then
       if #info.package.src > 0 then
         for f in ipairs(info.package.src) do
           if string.match(info.package.src[f], ".lua") then
-            pf:write('"' .. string.gsub(info.package.src[f], "/", k) .. '"' .. ", ")
+            pf:write("  " .. '"' .. string.gsub(info.package.src[f], "/", k) .. '"' .. ",\n")
           end
         end
       end
@@ -466,7 +466,7 @@ function cherry.patch(d)
       if #info.package.shared > 0 then
         for f in ipairs(info.package.shared) do
           if string.match(info.package.shared[f], ".so") or string.match(info.package.shared[f], ".dll") or string.match(info.package.shared[f], ".dylib") or string.match(info.package.shared[f], ".a") or string.match(info.package.shared[f], ".o") or string.match(info.package.shared[f], ".lib") then
-            pf:write('"' .. string.gsub(info.package.shared[f], "/", k) .. '"' .. ", ")
+            pf:write("  " .. '"' .. string.gsub(info.package.shared[f], "/", k) .. '"' .. ",\n")
           end
         end
       end
@@ -476,7 +476,7 @@ function cherry.patch(d)
       if #info.package.resources > 0 then
         for f in ipairs(info.package.resources) do
           if not (string.match(info.package.resources[f], ".lua") and string.match(info.package.resources[f], ".so") and string.match(info.package.resources[f], ".dll") and string.match(info.package.resources[f], ".dylib") and string.match(info.package.resources[f], ".a") and string.match(info.package.resources[f], ".o") and string.match(info.package.resources[f], ".lib")) then
-            pf:write('"' .. string.gsub(info.package.resources[f], "/", k) .. '"' .. ", ")
+            pf:write("  " .. '"' .. string.gsub(info.package.resources[f], "/", k) .. '"' .. ",\n")
           end
         end
       end
@@ -485,19 +485,19 @@ function cherry.patch(d)
     if info.package.licenses then
       if #info.package.licenses > 0 then
         for f in ipairs(info.package.licenses) do
-          pf:write('"' .. string.gsub(string.gsub(info.package.licenses[f], "LICENSE", info._NAME .. "-LICENSE"), "/", k) .. '"' .. ", ")
+          pf:write("  " .. '"' .. string.gsub(string.gsub(info.package.licenses[f], "LICENSE", info._NAME .. "-LICENSE"), "/", k) .. '"' .. ",\n")
         end
       end
     end
   
     if info.package.readme then
-      pf:write('"' .. string.gsub(info._NAME .. "-" .. info.package.readme, "/", k) .. '"' .. ", ")
+      pf:write("  " .. '"' .. string.gsub(info._NAME .. "-" .. info.package.readme, "/", k) .. '"' .. ",\n")
     end
   
     if info.package.external_files then
       if not #info.package.external_files > 0 then
         for f in ipairs(info.package.external_files) do
-          pf:write('"' .. info.package.external_files[f] .. '"' .. ", ")
+          pf:write("  " .. '"' .. info.package.external_files[f] .. '"' .. ",\n")
         end
       end
     end
