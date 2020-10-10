@@ -381,9 +381,9 @@ function cherry.run(d, a)
     if info._APP then
       for i in ipairs(info.package.src) do
         if (string.match(info.package.src[i], info.package.main)) then
-          cherry.print("RUNNING PACKAGE " .. info._NAME .. " AS APP...\n")
+          cherry.print("CHERRY >> INFO: RUNNING PACKAGE " .. info._NAME .. " AS APP...\n")
           os.execute("cd " .. d .. " " .. o .. " luajit " .. info.package.main .. " " .. (unpack(a) or ""))
-          cherry.print("PACKAGE " .. info._NAME .. " RAN AS APP SUCCESSFULLY!\n")
+          cherry.print("CHERRY >> INFO: PACKAGE " .. info._NAME .. " RAN AS APP SUCCESSFULLY!\n")
           break
         end
       end
