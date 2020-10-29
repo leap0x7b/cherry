@@ -600,3 +600,5 @@ for a in ipairs(arg) do
     cherry.valid(f)
   end
 end
+
+return cherry
