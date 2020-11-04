@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### v0.5 (4/November/2020)
+
+- Better support for Linux...
+- Add ability to not even using LuaJIT if you use FFI in PUC-RIO Lua.
+
 ### v0.4 (10/October/2020)
 
 - Added ability to create files list file for cherry package if does not comes with one.

@@ -1,13 +1,9 @@
 -- Written by Rabia Alhaffar in 4/Octorber/2020
 -- Cherry package manager source code!
--- VERSION: v0.4 (10/October/2020)
-if not require("jit") then
-  print("CHERRY >> ERROR: NOT POSSIBLE TO USE NON-LUAJIT COMPILER WITH CHERRY!")
-  return false
-end
+-- VERSION: v0.5 (4/November/2020)
 local ffi = require("ffi")
 local cherry = {
-  _VERSION = 0.4,
+  _VERSION = 0.5,
   _URL = "https://github.com/Rabios/cherry",
   _PATH = string.gsub(debug.getinfo(1).short_src, "/", (ffi.os == "Windows" and [[\]] or "/")),
   _UPDATELINK = "https://github.com/Rabios/cherry/archive/master.zip",
@@ -197,12 +193,13 @@ end
 
 function cherry.remove(p, d)
   local k = (ffi.os == "Windows" and [[\]] or "/")
+	local c = (ffi.os == "Windows" and "erase " or "rm -f ")
   local info = dofile(string.gsub(d .. "/" .. p .. ".files", "/", k))
   cherry.print("CHERRY >> INFO: REMOVING PACKAGE " .. p .. " FROM " .. d .. "\n")
   for f in ipairs(info) do
-    os.execute("erase " .. string.gsub(d, "/", k) .. k .. info[f])
+    os.execute(c .. string.gsub(d, "/", k) .. k .. info[f])
   end
-  os.execute("erase " .. string.gsub(d .. "/" .. p .. ".files", "/", k))
+  os.execute(c .. string.gsub(d .. "/" .. p .. ".files", "/", k))
   cherry.print("CHERRY >> INFO: PACKAGE " .. p .. " REMOVED SUCCESSFULLY!\n")
 end
 
@@ -233,8 +230,9 @@ function cherry.install(s, d)
   if info._OS then
     if not info._OS == "global" then
       if not ffi.os == info._OS then
+			  local d = (ffi.os == "Windows" and "rmdir /Q /S " or "rm -r -f ")
         cherry.print("CHERRY >> ERROR: FAILED TO INSTALL PACKAGE! (1)\n")
-        os.execute(ffi.os == "Windows" and "rmdir /Q /S " .. string.gsub(s, "/", k) or "rm -r -f " .. string.gsub(s, "/", k))
+        os.execute(d .. string.gsub(s, "/", k))
         return false
       end
     end
@@ -244,7 +242,8 @@ function cherry.install(s, d)
     if not info._ARCH == "global" then
       if not ffi.arch == info._ARCH then
         cherry.print("CHERRY >> ERROR: FAILED TO INSTALL PACKAGE! (1)\n")
-        os.execute(ffi.os == "Windows" and "rmdir /Q /S " .. string.gsub(s, "/", k) or "rm -r -f " .. string.gsub(s, "/", k))
+				local d = (ffi.os == "Windows" and "rmdir /Q /S " or "rm -r -f ")
+        os.execute(d .. string.gsub(s, "/", k))
         return false
       end
     end
@@ -254,7 +253,8 @@ function cherry.install(s, d)
     if not info._CHERRY == "global" then
       if not cherry._VERSION >= info._CHERRY then
         cherry.print("CHERRY >> ERROR: FAILED TO INSTALL PACKAGE! (2)\n")
-        os.execute(ffi.os == "Windows" and "rmdir /Q /S " .. string.gsub(s, "/", k) or "rm -r -f " .. string.gsub(s, "/", k))
+        local d = (ffi.os == "Windows" and "rmdir /Q /S " or "rm -r -f ")
+        os.execute(d .. string.gsub(s, "/", k))
         return false
       end
     end
@@ -264,7 +264,8 @@ function cherry.install(s, d)
     if not info._LUA == "global" then
       if not cherry._LUA >= cherry.lua_version_num() then
         cherry.print("CHERRY >> ERROR: FAILED TO INSTALL PACKAGE! (2)\n")
-        os.execute(ffi.os == "Windows" and "rmdir /Q /S " .. string.gsub(s, "/", k) or "rm -r -f " .. string.gsub(s, "/", k))
+        local d = (ffi.os == "Windows" and "rmdir /Q /S " or "rm -r -f ")
+        os.execute(d .. string.gsub(s, "/", k))
         return false
       end
     end
