@@ -20,7 +20,7 @@ cherry._DIR         --> returns directory cherry lives
 
 ### `cherry.print(s)`
 
-This provides custom version of `print` function, But it does not write a new line after writing string!
+This provides custom version of `print` function, But it does not write a new line after printing string `s`!
 
 ### `cherry.lua_version_num()`
 
@@ -32,23 +32,23 @@ Prints version of cherry package manager.
 
 ### `cherry.dir(s)`
 
-Returns directory from string contains full path of a file as string.
+Returns directory from string `s` contains full path of a file as string.
 
 ### `cherry.read_info(f)`
 
-Reads package info and stores it in value if assigned to!
+Reads package info from path `f` (Directory) and stores it in value if assigned to!
 
 ### `cherry.valid(f)`
 
-Checks if package is valid to use.
+Checks if package from path `f` (Directory) is valid to use.
 
 ### `cherry.get(p, d, b, q, add)`
 
-Gets package with name `p` in directory `d`, With branch `b` and channel `q`, With option to auto install in directory `d` as boolean `add` (true/false)
+Gets package with name `p` in directory `d`, With branch `b` and channel `q`, With option to auto install in directory `d` as boolean `add` (true/false).
 
 ### `cherry.remove(p, d)`
 
-Removes package with name `p` in project/package directory `p`.
+Removes package with name `p` in project/package directory `d`.
 
 ### `cherry.uninstall(d)`
 
@@ -72,7 +72,7 @@ Creates files list for cherry package from cherry package config in directory `d
 
 ### `cherry.info(d)`
 
-Gives info about cherry package from directory if valid
+Gives info about cherry package from directory `d` if valid.
 
 ### `cherry.update()`
 
