@@ -1,9 +1,10 @@
 -- Written by Rabia Alhaffar in 4/Octorber/2020
 -- Cherry package manager source code!
--- VERSION: v0.5 (4/November/2020)
+-- VERSION: v0.6 (11/April/2020)
 local ffi = require("ffi")
+
 local cherry = {
-  _VERSION = 0.5,
+  _VERSION = 0.6,
   _URL = "https://github.com/Rabios/cherry",
   _PATH = string.gsub(debug.getinfo(1).short_src, "/", (ffi.os == "Windows" and [[\]] or "/")),
   _UPDATELINK = "https://github.com/Rabios/cherry/archive/master.zip",
@@ -17,23 +18,23 @@ _|        _|_|_|_|  _|_|_|    _|_|_|    _|_|_|        _|
 _|        _|    _|  _|        _|    _|  _|    _|      _|      
   _|_|_|  _|    _|  _|_|_|_|  _|    _|  _|    _|      _|      
 ============================================================]])
-print("Cherry v" .. cherry._VERSION .. " by " .. cherry._AUTHOR .. ", " .. cherry._URL)
+print("Cherry v" .. cherry._VERSION .. " by " .. cherry._AUTHOR .. ", " .. cherry._URL .. "\n")
 print([[
 ==================
      COMMANDS
 ==================
-cherry -v or --version                          Returns cherry version
-cherry get package dir [branch] [channel]       Downloads cherry package as archive from channel with branch to directory
-cherry install src dir                          Installs cherry package from folder to directory
-cherry valid dir                                Validate cherry package from directory
-cherry new dir                                  Setup a new cherry package in directory
-cherry run dir                                  Run package with LuaJIT in case it's app
-cherry info dir                                 Gives info about cherry package if valid
-cherry patch dir                                Creates files list for cherry package from cherry package config in directory
-cherry add package dir                          Downloads and installs cherry package directly in same directory
-cherry uninstall package-dir                    If cherry package in directory is valid then remove it
-cherry remove package-name package-dir          Removes cherry package from directory of another cherry package
-cherry update                                   Updates cherry package manager
+cherry -v or --version                           Returns cherry version
+cherry get package dir [branch] [channel]        Downloads cherry package as archive from channel with branch to directory
+cherry install src dir                           Installs cherry package from folder to directory
+cherry valid dir                                 Validate cherry package from directory
+cherry new dir                                   Setup a new cherry package in directory
+cherry run dir                                   Run package with LuaJIT in case it's app
+cherry info dir                                  Gives info about cherry package if valid
+cherry patch dir                                 Creates files list for cherry package from cherry package config in directory
+cherry add package dir                           Downloads and installs cherry package directly in same directory
+cherry uninstall package-dir                     If cherry package in directory is valid then remove it
+cherry remove package-name package-dir           Removes cherry package from directory of another cherry package
+cherry update                                    Updates cherry package manager
 ]])
 
 -- Polyfill for table.unpack
@@ -230,7 +231,7 @@ function cherry.install(s, d)
   if info._OS then
     if not info._OS == "global" then
       if not ffi.os == info._OS then
-			  local d = (ffi.os == "Windows" and "rmdir /Q /S " or "rm -r -f ")
+		local d = (ffi.os == "Windows" and "rmdir /Q /S " or "rm -r -f ")
         cherry.print("CHERRY >> ERROR: FAILED TO INSTALL PACKAGE! (1)\n")
         os.execute(d .. string.gsub(s, "/", k))
         return false
@@ -242,7 +243,7 @@ function cherry.install(s, d)
     if not info._ARCH == "global" then
       if not ffi.arch == info._ARCH then
         cherry.print("CHERRY >> ERROR: FAILED TO INSTALL PACKAGE! (1)\n")
-				local d = (ffi.os == "Windows" and "rmdir /Q /S " or "rm -r -f ")
+        local d = (ffi.os == "Windows" and "rmdir /Q /S " or "rm -r -f ")
         os.execute(d .. string.gsub(s, "/", k))
         return false
       end

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v0.6 (11/April/2021)
+
+- Added docs...
+
 ### v0.5 (4/November/2020)
 
 - Better support for Linux...
