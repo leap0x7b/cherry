@@ -88,9 +88,9 @@ return {
   ]],
   package = {
     src = {
-	    "test.lua"
-	  },
-	  main = "test.lua",
+      "test.lua"
+    },
+    main = "test.lua",
   }
 }
 ```
